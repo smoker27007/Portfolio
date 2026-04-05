@@ -1,0 +1,44 @@
+.scroll-section-outer {
+  position: relative;
+}
+
+.scroll-section-inner {
+  display: flex;
+  gap: 40px;
+  padding: 0 40px;
+  will-change: transform;
+}
+
+.scroll-progress {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform-origin: left;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.section-number {
+  color: var(--text-primary);
+}
+
+.section-label {
+  color: var(--text-secondary);
+}
+
+.accent-dot {
+  color: var(--accent);
+}
+
+.divider-line {
+  background: var(--glass-border);
+}
+
+@media (max-width: 768px) {
+  .scroll-section-inner {
+    gap: 20px;
+    padding: 0 20px;
+  }
+}
