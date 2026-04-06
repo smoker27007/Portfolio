@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import avatarImg from "../../assets/avatar.png";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const AnimatedFace = () => {
   const canvasRef = useRef(null);
@@ -8,6 +12,7 @@ const AnimatedFace = () => {
   const scrollRef = useRef(0);
   const animFrameRef = useRef(0);
   const readyRef = useRef(false);
+  const entryProgressRef = useRef(0);
   const dimensionsRef = useRef({ w: 0, h: 0, offsetX: 0, offsetY: 0 });
 
   useEffect(() => {
@@ -25,29 +30,37 @@ const AnimatedFace = () => {
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const avatarScale = Math.min(1, w / 1400);
+      const sampleW = Math.round(420 * avatarScale);
+      const sampleH = Math.round(560 * avatarScale);
+
+      const rightPadding = Math.max(24, w * 0.08);
       dimensionsRef.current = {
         w, h,
-        offsetX: w * 0.55,
-        offsetY: h * 0.15,
+        offsetX: w - sampleW - rightPadding,
+        offsetY: (h - sampleH) / 2,
+        sampleW,
+        sampleH,
       };
     };
     resize();
     window.addEventListener("resize", resize);
 
-    const SAMPLE_W = 380;
-    const SAMPLE_H = 500;
-    const GAP = 2;
-    const DOT_RADIUS = 1;
-    const MOUSE_RADIUS = 100;
-    const PUSH_FORCE = 12;
-    const RETURN_SPEED = 0.08;
-    const FRICTION = 0.82;
+    const GAP = 3;
+    const DOT_RADIUS = 2.2;
+    const MOUSE_RADIUS = 120;
+    const PUSH_FORCE = 18;
+    const RETURN_SPEED = 0.14;
+    const FRICTION = 0.85;
 
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = avatarImg;
 
     img.onload = () => {
+      const { sampleW: SAMPLE_W, sampleH: SAMPLE_H, w: viewW, h: viewH } = dimensionsRef.current;
+
       const offCanvas = document.createElement("canvas");
       const offCtx = offCanvas.getContext("2d");
       if (!offCtx) return;
@@ -75,7 +88,6 @@ const AnimatedFace = () => {
       const pixels = imageData.data;
 
       const particles = [];
-      const { w: viewW, h: viewH } = dimensionsRef.current;
 
       for (let y = 0; y < SAMPLE_H; y += GAP) {
         for (let x = 0; x < SAMPLE_W; x += GAP) {
@@ -95,10 +107,10 @@ const AnimatedFace = () => {
           const dy = (y - cy) / (SAMPLE_H / 2);
           const distFromCenter = Math.sqrt(dx * dx + dy * dy);
 
-          if (brightness < 0.06 && distFromCenter > 0.4) continue;
-          if (brightness < 0.1 && distFromCenter > 0.75) continue;
-          if (brightness < 0.15 && (x < 15 || x > SAMPLE_W - 15 || y < 10)) continue;
-          if (brightness < 0.03) continue;
+          if (brightness < 0.04 && distFromCenter > 0.55) continue;
+          if (brightness < 0.08 && distFromCenter > 0.85) continue;
+          if (brightness < 0.12 && (x < 10 || x > SAMPLE_W - 10 || y < 8)) continue;
+          if (brightness < 0.02) continue;
 
           const { offsetX, offsetY } = dimensionsRef.current;
           const worldX = offsetX + x;
@@ -110,14 +122,19 @@ const AnimatedFace = () => {
           const maxDim = Math.max(viewW, viewH);
           const scatterDist = maxDim * 0.5 + Math.random() * maxDim * 0.8;
 
+          const entryAngle = Math.random() * Math.PI * 2;
+          const entryDist = 150 + Math.random() * 250;
+          const startX = worldX + Math.cos(entryAngle) * entryDist;
+          const startY = worldY + Math.sin(entryAngle) * entryDist;
+
           particles.push({
-            x: worldX,
-            y: worldY,
+            x: startX,
+            y: startY,
             originX: worldX,
             originY: worldY,
-            r,
-            g,
-            b,
+            startX,
+            startY,
+            r, g, b,
             alpha: 1.0,
             size: DOT_RADIUS,
             baseSize: DOT_RADIUS,
@@ -125,26 +142,44 @@ const AnimatedFace = () => {
             vy: 0,
             scatterAngle: angle,
             scatterDist,
+            floatPhase: Math.random() * Math.PI * 2,
+            floatAmpX: 0.3 + Math.random() * 0.8,
+            floatAmpY: 0.3 + Math.random() * 0.8,
+            floatSpeedX: 0.0003 + Math.random() * 0.0006,
+            floatSpeedY: 0.0004 + Math.random() * 0.0005,
           });
         }
       }
 
       particlesRef.current = particles;
       readyRef.current = true;
+
+      const entryAnim = { progress: 0 };
+      gsap.to(entryAnim, {
+        progress: 1,
+        duration: 1.5,
+        delay: 0.4,
+        ease: "power3.out",
+        onUpdate: () => {
+          entryProgressRef.current = entryAnim.progress;
+        },
+      });
     };
 
-    const handleScroll = () => {
-      const heroSection = canvas.closest("section");
-      if (!heroSection) return;
-      const rect = heroSection.getBoundingClientRect();
-      const sectionH = heroSection.offsetHeight;
-      const viewH = window.innerHeight;
-      const scrolled = -rect.top;
-      const totalScroll = sectionH - viewH;
-      const progress = Math.max(0, Math.min(1, scrolled / totalScroll));
-      scrollRef.current = progress * progress;
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const heroSection = canvas.closest("section");
+    let st;
+    if (heroSection) {
+      st = ScrollTrigger.create({
+        trigger: heroSection,
+        start: "top top",
+        end: "+=150%",
+        onUpdate: (self) => {
+          scrollRef.current = self.progress * self.progress;
+        }
+      });
+    }
+
+    const startTime = performance.now();
 
     const animate = () => {
       if (!ctx || !canvas) return;
@@ -160,41 +195,59 @@ const AnimatedFace = () => {
       const particles = particlesRef.current;
       const len = particles.length;
       const sp = scrollRef.current;
+      const ep = entryProgressRef.current;
+      const now = performance.now();
+      const elapsed = now - startTime;
 
       for (let i = 0; i < len; i++) {
         const p = particles[i];
 
-        const targetX = p.originX + Math.cos(p.scatterAngle) * p.scatterDist * sp;
-        const targetY = p.originY + Math.sin(p.scatterAngle) * p.scatterDist * sp;
+        const assembledX = p.originX + Math.cos(p.scatterAngle) * p.scatterDist * sp;
+        const assembledY = p.originY + Math.sin(p.scatterAngle) * p.scatterDist * sp;
 
-        if (sp < 0.3) {
-          const mdx = mouse.x - p.x;
-          const mdy = mouse.y - p.y;
-          const distSq = mdx * mdx + mdy * mdy;
-          const maxDistSq = MOUSE_RADIUS * MOUSE_RADIUS;
+        const floatX = Math.sin(elapsed * p.floatSpeedX + p.floatPhase) * p.floatAmpX * ep * (1 - sp);
+        const floatY = Math.cos(elapsed * p.floatSpeedY + p.floatPhase) * p.floatAmpY * ep * (1 - sp);
 
-          if (distSq < maxDistSq && distSq > 0) {
-            const dist = Math.sqrt(distSq);
-            const force = (1 - dist / MOUSE_RADIUS) * PUSH_FORCE * (1 - sp * 3);
-            const mAngle = Math.atan2(mdy, mdx);
-            p.vx -= Math.cos(mAngle) * force;
-            p.vy -= Math.sin(mAngle) * force;
-            p.size = p.baseSize + (1 - dist / MOUSE_RADIUS) * 2.5;
+        if (ep < 0.99) {
+          const easedEp = ep * ep * (3 - 2 * ep);
+          p.x = p.startX + (assembledX - p.startX) * easedEp + floatX;
+          p.y = p.startY + (assembledY - p.startY) * easedEp + floatY;
+          p.vx = 0;
+          p.vy = 0;
+          p.size += (p.baseSize - p.size) * 0.12;
+        } else {
+          const targetX = assembledX + floatX;
+          const targetY = assembledY + floatY;
+
+          if (sp < 0.3) {
+            const mdx = mouse.x - p.x;
+            const mdy = mouse.y - p.y;
+            const distSq = mdx * mdx + mdy * mdy;
+            const maxDistSq = MOUSE_RADIUS * MOUSE_RADIUS;
+
+            if (distSq < maxDistSq && distSq > 0) {
+              const dist = Math.sqrt(distSq);
+              const force = (1 - dist / MOUSE_RADIUS) * PUSH_FORCE * (1 - sp * 3);
+              const mAngle = Math.atan2(mdy, mdx);
+              p.vx -= Math.cos(mAngle) * force;
+              p.vy -= Math.sin(mAngle) * force;
+              p.size = p.baseSize + (1 - dist / MOUSE_RADIUS) * 3;
+            } else {
+              p.size += (p.baseSize - p.size) * 0.12;
+            }
           } else {
             p.size += (p.baseSize - p.size) * 0.12;
           }
-        } else {
-          p.size += (p.baseSize - p.size) * 0.12;
+
+          p.vx += (targetX - p.x) * RETURN_SPEED;
+          p.vy += (targetY - p.y) * RETURN_SPEED;
+          p.vx *= FRICTION;
+          p.vy *= FRICTION;
+          p.x += p.vx;
+          p.y += p.vy;
         }
 
-        p.vx += (targetX - p.x) * RETURN_SPEED;
-        p.vy += (targetY - p.y) * RETURN_SPEED;
-        p.vx *= FRICTION;
-        p.vy *= FRICTION;
-        p.x += p.vx;
-        p.y += p.vy;
-
-        const fadeAlpha = p.alpha * (1 - sp * 0.85);
+        const fadeAlpha = p.alpha * Math.min(1, ep * 1.5) * (1 - sp * 0.85);
         if (fadeAlpha < 0.005) continue;
         const drawSize = p.size * (1 - sp * 0.4);
 
@@ -221,7 +274,7 @@ const AnimatedFace = () => {
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("scroll", handleScroll);
+      if (st) st.kill();
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animFrameRef.current);
@@ -237,7 +290,8 @@ const AnimatedFace = () => {
         left: 0,
         width: "100%",
         height: "100%",
-        pointerEvents: "none",
+        pointerEvents: "auto",
+        zIndex: 1,
       }}
     />
   );

@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./Pages/Hero/Hero";
+import AboutSection from "./components/AboutSection/AboutSection";
 import HorizontalScroll from "./components/HorizontalScroll/HorizontalScroll";
 import ProjectSection from "./components/ProjectSection/ProjectSection";
 import ContactSection from "./components/ContactSection/ContactSection";
@@ -50,19 +51,18 @@ function App() {
 
   return (
     <main>
-      <Navbar progress={scrollProgress} />
+      <Navbar />
 
-      {/* Section 1: Hero with dismantling effect */}
       <Hero />
 
-      {/* Section 2: Horizontal scroll projects */}
+      <AboutSection />
+
       <HorizontalScroll onProgressUpdate={handleProgress}>
         {PROJECTS.map((project) => (
           <ProjectSection key={project.number} {...project} />
         ))}
       </HorizontalScroll>
 
-      {/* Section 3: Contact */}
       <ContactSection />
     </main>
   );
