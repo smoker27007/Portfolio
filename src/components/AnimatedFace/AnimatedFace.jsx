@@ -34,7 +34,6 @@ const AnimatedFace = () => {
       const avatarScale = Math.min(1, w / 1400);
       const sampleW = Math.round(420 * avatarScale);
       const sampleH = Math.round(560 * avatarScale);
-
       const rightPadding = Math.max(24, w * 0.08);
       dimensionsRef.current = {
         w, h,
@@ -54,6 +53,15 @@ const AnimatedFace = () => {
     const RETURN_SPEED = 0.14;
     const FRICTION = 0.85;
 
+    // Precompute a set of shard "crack centers" — used to assign each particle
+    // a glass-shard burst direction instead of pure random
+    const SHARD_COUNT = 18;
+    const shardCenters = Array.from({ length: SHARD_COUNT }, (_, i) => {
+      const a = (i / SHARD_COUNT) * Math.PI * 2;
+      const r = 0.25 + Math.random() * 0.45;
+      return { nx: Math.cos(a) * r, ny: Math.sin(a) * r };
+    });
+
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = avatarImg;
@@ -70,17 +78,12 @@ const AnimatedFace = () => {
       const imgAspect = img.width / img.height;
       const canvasAspect = SAMPLE_W / SAMPLE_H;
       let drawW, drawH, drawX, drawY;
-
       if (imgAspect > canvasAspect) {
-        drawH = SAMPLE_H;
-        drawW = SAMPLE_H * imgAspect;
-        drawX = (SAMPLE_W - drawW) / 2;
-        drawY = 0;
+        drawH = SAMPLE_H; drawW = SAMPLE_H * imgAspect;
+        drawX = (SAMPLE_W - drawW) / 2; drawY = 0;
       } else {
-        drawW = SAMPLE_W;
-        drawH = SAMPLE_W / imgAspect;
-        drawX = 0;
-        drawY = (SAMPLE_H - drawH) / 2;
+        drawW = SAMPLE_W; drawH = SAMPLE_W / imgAspect;
+        drawX = 0; drawY = (SAMPLE_H - drawH) / 2;
       }
 
       offCtx.drawImage(img, drawX, drawY, drawW, drawH);
@@ -88,24 +91,19 @@ const AnimatedFace = () => {
       const pixels = imageData.data;
 
       const particles = [];
+      const portraitCXnorm = 0.5;
+      const portraitCYnorm = 0.38;
 
       for (let y = 0; y < SAMPLE_H; y += GAP) {
         for (let x = 0; x < SAMPLE_W; x += GAP) {
           const i = (y * SAMPLE_W + x) * 4;
-          const r = pixels[i];
-          const g = pixels[i + 1];
-          const b = pixels[i + 2];
-          const a = pixels[i + 3];
-
+          const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2], a = pixels[i + 3];
           if (a < 30) continue;
 
           const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
-
-          const cx = SAMPLE_W / 2;
-          const cy = SAMPLE_H * 0.38;
-          const dx = (x - cx) / (SAMPLE_W / 2);
-          const dy = (y - cy) / (SAMPLE_H / 2);
-          const distFromCenter = Math.sqrt(dx * dx + dy * dy);
+          const nx = (x / SAMPLE_W - portraitCXnorm);
+          const ny = (y / SAMPLE_H - portraitCYnorm);
+          const distFromCenter = Math.sqrt(nx * nx + ny * ny);
 
           if (brightness < 0.04 && distFromCenter > 0.55) continue;
           if (brightness < 0.08 && distFromCenter > 0.85) continue;
@@ -116,32 +114,43 @@ const AnimatedFace = () => {
           const worldX = offsetX + x;
           const worldY = offsetY + y;
 
-          const portraitCX = offsetX + SAMPLE_W / 2;
-          const portraitCY = offsetY + SAMPLE_H / 2;
-          const angle = Math.atan2(worldY - portraitCY, worldX - portraitCX) + (Math.random() - 0.5) * 1.5;
-          const maxDim = Math.max(viewW, viewH);
-          const scatterDist = maxDim * 0.5 + Math.random() * maxDim * 0.8;
+          // Assign this particle to the nearest shard center for burst direction
+          let bestDist = Infinity, bestShard = shardCenters[0];
+          for (const sc of shardCenters) {
+            const d = (nx - sc.nx) ** 2 + (ny - sc.ny) ** 2;
+            if (d < bestDist) { bestDist = d; bestShard = sc; }
+          }
 
+          // Glass burst: primary direction from shard center outward,
+          // with slight angular jitter for a shattered look
+          const baseAngle = Math.atan2(bestShard.ny, bestShard.nx);
+          const jitter = (Math.random() - 0.5) * 0.8;
+          const burstAngle = baseAngle + jitter;
+          // Distance varies: shards at the edges fly further
+          const edgeFactor = 0.4 + distFromCenter * 1.6;
+          const maxDim = Math.max(viewW, viewH);
+          const scatterDist = maxDim * (0.6 + edgeFactor * 0.8) + Math.random() * maxDim * 0.4;
+
+          // Entry animation: converge from a nearby scatter
           const entryAngle = Math.random() * Math.PI * 2;
           const entryDist = 150 + Math.random() * 250;
-          const startX = worldX + Math.cos(entryAngle) * entryDist;
-          const startY = worldY + Math.sin(entryAngle) * entryDist;
 
           particles.push({
-            x: startX,
-            y: startY,
+            x: worldX + Math.cos(entryAngle) * entryDist,
+            y: worldY + Math.sin(entryAngle) * entryDist,
             originX: worldX,
             originY: worldY,
-            startX,
-            startY,
+            startX: worldX + Math.cos(entryAngle) * entryDist,
+            startY: worldY + Math.sin(entryAngle) * entryDist,
             r, g, b,
             alpha: 1.0,
             size: DOT_RADIUS,
             baseSize: DOT_RADIUS,
-            vx: 0,
-            vy: 0,
-            scatterAngle: angle,
+            vx: 0, vy: 0,
+            burstAngle,
             scatterDist,
+            // slight spiral: each particle spins a little as it bursts out
+            spiralOffset: (Math.random() - 0.5) * 0.4,
             floatPhase: Math.random() * Math.PI * 2,
             floatAmpX: 0.3 + Math.random() * 0.8,
             floatAmpY: 0.3 + Math.random() * 0.8,
@@ -156,13 +165,8 @@ const AnimatedFace = () => {
 
       const entryAnim = { progress: 0 };
       gsap.to(entryAnim, {
-        progress: 1,
-        duration: 1.5,
-        delay: 0.4,
-        ease: "power3.out",
-        onUpdate: () => {
-          entryProgressRef.current = entryAnim.progress;
-        },
+        progress: 1, duration: 1.5, delay: 0.4, ease: "power3.out",
+        onUpdate: () => { entryProgressRef.current = entryAnim.progress; },
       });
     };
 
@@ -174,7 +178,11 @@ const AnimatedFace = () => {
         start: "top top",
         end: "+=150%",
         onUpdate: (self) => {
-          scrollRef.current = self.progress * self.progress;
+          // Ease the scroll progress so the burst feels snappier early
+          const raw = self.progress;
+          scrollRef.current = raw < 0.5
+            ? raw * raw * 2               // fast ease-in
+            : 1 - (1 - raw) * (1 - raw) * 2; // ease out at the end
         }
       });
     }
@@ -202,8 +210,10 @@ const AnimatedFace = () => {
       for (let i = 0; i < len; i++) {
         const p = particles[i];
 
-        const assembledX = p.originX + Math.cos(p.scatterAngle) * p.scatterDist * sp;
-        const assembledY = p.originY + Math.sin(p.scatterAngle) * p.scatterDist * sp;
+        // Glass-shard burst: angle rotates slightly as sp increases (spiral feel)
+        const spiralAngle = p.burstAngle + p.spiralOffset * sp * Math.PI;
+        const assembledX = p.originX + Math.cos(spiralAngle) * p.scatterDist * sp;
+        const assembledY = p.originY + Math.sin(spiralAngle) * p.scatterDist * sp;
 
         const floatX = Math.sin(elapsed * p.floatSpeedX + p.floatPhase) * p.floatAmpX * ep * (1 - sp);
         const floatY = Math.cos(elapsed * p.floatSpeedY + p.floatPhase) * p.floatAmpY * ep * (1 - sp);
@@ -212,20 +222,16 @@ const AnimatedFace = () => {
           const easedEp = ep * ep * (3 - 2 * ep);
           p.x = p.startX + (assembledX - p.startX) * easedEp + floatX;
           p.y = p.startY + (assembledY - p.startY) * easedEp + floatY;
-          p.vx = 0;
-          p.vy = 0;
+          p.vx = 0; p.vy = 0;
           p.size += (p.baseSize - p.size) * 0.12;
         } else {
           const targetX = assembledX + floatX;
           const targetY = assembledY + floatY;
 
           if (sp < 0.3) {
-            const mdx = mouse.x - p.x;
-            const mdy = mouse.y - p.y;
+            const mdx = mouse.x - p.x, mdy = mouse.y - p.y;
             const distSq = mdx * mdx + mdy * mdy;
-            const maxDistSq = MOUSE_RADIUS * MOUSE_RADIUS;
-
-            if (distSq < maxDistSq && distSq > 0) {
+            if (distSq < MOUSE_RADIUS * MOUSE_RADIUS && distSq > 0) {
               const dist = Math.sqrt(distSq);
               const force = (1 - dist / MOUSE_RADIUS) * PUSH_FORCE * (1 - sp * 3);
               const mAngle = Math.atan2(mdy, mdx);
@@ -247,9 +253,14 @@ const AnimatedFace = () => {
           p.y += p.vy;
         }
 
-        const fadeAlpha = p.alpha * Math.min(1, ep * 1.5) * (1 - sp * 0.85);
+        // Fade out more aggressively during burst (glass shattering fades fast)
+        const burstFade = sp > 0.15 ? Math.max(0, 1 - (sp - 0.15) * 2.2) : 1;
+        const fadeAlpha = p.alpha * Math.min(1, ep * 1.5) * burstFade;
         if (fadeAlpha < 0.005) continue;
-        const drawSize = p.size * (1 - sp * 0.4);
+
+        // Particles grow slightly as they burst out (like shards catching light)
+        const burstGrow = 1 + sp * 1.8;
+        const drawSize = p.size * burstGrow;
 
         ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${fadeAlpha})`;
         ctx.beginPath();
@@ -262,13 +273,8 @@ const AnimatedFace = () => {
 
     animFrameRef.current = requestAnimationFrame(animate);
 
-    const handleMouseMove = (e) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
-    const handleMouseLeave = () => {
-      mouseRef.current = { x: -9999, y: -9999 };
-    };
-
+    const handleMouseMove = (e) => { mouseRef.current = { x: e.clientX, y: e.clientY }; };
+    const handleMouseLeave = () => { mouseRef.current = { x: -9999, y: -9999 }; };
     window.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseleave", handleMouseLeave);
 
@@ -286,10 +292,8 @@ const AnimatedFace = () => {
       ref={canvasRef}
       style={{
         position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
+        top: 0, left: 0,
+        width: "100%", height: "100%",
         pointerEvents: "auto",
         zIndex: 1,
       }}

@@ -1,52 +1,64 @@
 .hero-section {
-  position: relative;
-  background: var(--bg-primary);
-  overflow: hidden;
-  height: 100vh;
-  perspective: 2000px;
-  transform-style: preserve-3d;
+  position:relative;
+  background:var(--bg-primary);
+  overflow:hidden;
+  height:100vh;
+  perspective:2000px;
+  transform-style:preserve-3d;
 }
 
 .hero-sticky {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background: var(--bg-primary);
-  overflow: hidden;
+  position:relative;
+  height:100vh;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  background:var(--bg-primary);
+  overflow:hidden;
 }
 
+/*--- Glow orbs ---------------------------------------------*/
 .hero-glow {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  will-change: transform;
+  position:absolute;
+  border-radius:50%;
+  pointer-events: none;;
+  will-change: transform,opacity;
   filter: blur(60px);
 }
 
 .hero-glow-1 {
   width: 600px;
-  height: 600px;
-  top: 10%;
-  right: 15%;
-  background: radial-gradient(
-    circle,
-    rgba(74, 158, 255, 0.08) 0%,
-    rgba(74, 158, 255, 0.02) 40%,
-    transparent 70%
+  height:600px;
+  top:10%;
+  right:15%;
+  background: radial-gradient(circle,
+  rgba(74,158,255,0.08) 0%,
+  rgba(74,168,255,0.02)40%
+  transparent 70%
   );
 }
 
+.hero-glow-1 {
+  width:600px;
+  height:600px;
+  top:10%;
+  right:15%;
+  background: radial-gradient( 
+    circle,
+    rgba(74,158,255,0.08) 0%,
+    rgb(74,158,255,0.02) 40%,
+    transparent 70%
+  );
+}
 .hero-glow-2 {
-  width: 400px;
-  height: 400px;
+  width:400px;
+  height:400px;
   bottom: 10%;
   left: 30%;
-  background: radial-gradient(
-    circle,
-    rgba(201, 169, 110, 0.06) 0%,
+  background: radila-gradient( 
+    cirxle,
+    rgba(201,169,110,0.06) 0%,
     transparent 70%
   );
 }
@@ -54,40 +66,25 @@
 .hero-glow-3 {
   width: 500px;
   height: 500px;
-  top: 50%;
-  left: 45%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
+  top:50%;
+  left:45%;
+  transform: translate(-50%,-50%);
+  background: radial-gradient( 
     circle,
-    rgba(99, 102, 241, 0.05) 0%,
+    rgba(99,102,241,0.05) 0%,
     transparent 70%
   );
 }
 
+/* --- Content layout ---------------------------------- */
+
 .hero-content {
   position: relative;
-  z-index: 10;
-  padding: 0 clamp(24px, 5vw, 96px);
+  z-index:10;
+  padding: 0 clamp (24px,5vw,96px);
   width: 55%;
-  display: flex;
-  align-items: center;
-}
-
-.hero-content-inner {
-  width: 100%;
-  max-width: 700px;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: clamp(16px, 2.5vw, 32px);
-  padding: 8px 16px 8px 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 100px;
-  backdrop-filter: blur(8px);
+  display:flex;
+  align-items:center;
 }
 
 .hero-badge-dot {
@@ -95,227 +92,92 @@
   height: 8px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+  box-shadow: 0 12px rgba(16,185,129,0.6);
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+  0%, 100% { box-shadow: 0 0 8px rgba(16,185,129,0.6);}
+  50%      {box-shadow: 0 0 20px rgba(16,185,129,0.8);}
 }
+
 
 .hero-badge-text {
   font-family: 'Inter', monospace;
   font-size: 11px;
-  font-weight: 500;
+  font-weight:500;
   text-transform: uppercase;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.25rem;
   color: var(--text-secondary);
 }
 
+/* --- Title ----------------------------------------------------*/
+
 .hero-title-wrapper {
-  margin-bottom: clamp(12px, 2vw, 20px);
+  margin-bottom: clamp(12px, 2vw,20px);
   transform-style: preserve-3d;
 }
 
 .hero-title-line {
-  overflow: hidden;
+  overflow:visible;/* must be visible so chars can fly outside during burst*/
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom:4px;
 }
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(40px, 7.5vw, 110px);
-  font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-  margin-bottom: 0;
-  white-space: nowrap;
+  font-size:clamp(32px,6vw,85px);
+  font-weight:800;
+  line-height:0.95;
+  letter-spacing:-0.02em;
+  color:var(--text-primary);
+  margin-bottom:0;
+  white-space:nowrap;
 }
+
+/* --- Inidividual characters ----------------------------------------*/
+
+/* GSAP moves these across the full viewport during the glass-shard dismantling,so they must be individually composited and not clipped by any ancestor overflow:hidden. */ 
 
 .hero-char {
   display: inline-block;
   white-space: pre;
-  transition: color 0.4s ease;
+  will-change:transform,opacity;
+  transform-style: preserve-3d;
+  transition: color 0.4s ease, -webkit-text-stroke 0.4s ease;
+}
+
+
+.hero-char-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255,255,255,0.4);
 }
 
 .accent-period {
   color: var(--accent);
-  font-size: 1.2em;
+  font-size:1.2em;
 }
 
-.hero-divider-line {
-  width: 100%;
-  height: 1px;
-  margin-bottom: clamp(12px, 2vw, 20px);
-  background: linear-gradient(
-    90deg,
-    var(--accent) 0%,
-    var(--accent-gold) 50%,
-    transparent 100%
-  );
-  transform-origin: left;
+/* --- Divider -------------------------------------------------------*/
+
+.hero-divider-line {width:100%;
+height:1px;
+margin-bottom: clamp(12px,2vw,20px);
+background:linear-gradient(90deg,var(--accent) 0%, var(--accent-gold) 50%, transparent 100%);
+transform-origin:left;
+will-change:transform,opacity;
 }
 
+/* -- Role tags ----------------------------------------------*/
 .hero-roles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: clamp(16px, 2vw, 28px);
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:clamp(16px,2vw,28px);
 }
 
 .hero-role-tag {
   display: inline-block;
   padding: 6px 16px;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(4px);
-  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-.hero-role-tag:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(74, 158, 255, 0.05);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(74, 158, 255, 0.15);
-}
-
-.hero-bottom {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.hero-description {
-  color: var(--text-secondary);
-  font-size: clamp(13px, 1.2vw, 15px);
-  line-height: 1.7;
-  max-width: 400px;
-}
-
-.hero-scroll-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.hero-scroll-text {
-  font-family: 'Inter', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
-  color: var(--text-secondary);
-}
-
-.hero-scroll-indicator {
-  width: 24px;
-  height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 100px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 8px;
-}
-
-.hero-scroll-dot {
-  width: 3px;
-  height: 10px;
-  border-radius: 100px;
-  background: var(--accent);
-  animation: scroll-bounce 2s ease-in-out infinite;
-}
-
-@keyframes scroll-bounce {
-  0%, 100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(16px);
-    opacity: 0.3;
-  }
-}
-
-@media (max-width: 1200px) {
-  .hero-content {
-    width: 60%;
-  }
-}
-
-@media (max-width: 1024px) {
-  .hero-section {
-    height: 100vh;
-  }
-
-  .hero-sticky {
-    align-items: flex-end;
-    padding-bottom: 60px;
-  }
-
-  .hero-content {
-    width: 100%;
-    padding: 0 24px;
-  }
-
-  .hero-content-inner {
-    max-width: 100%;
-  }
-
-  .hero-title {
-    font-size: clamp(36px, 12vw, 80px);
-  }
-
-  .hero-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    height: 100vh;
-  }
-
-  .hero-sticky {
-    align-items: center;
-    padding-bottom: 0;
-  }
-
-  .hero-title {
-    font-size: clamp(32px, 13vw, 60px);
-  }
-
-  .hero-roles {
-    gap: 8px;
-  }
-
-  .hero-role-tag {
-    font-size: 10px;
-    padding: 5px 12px;
-  }
-
-  .hero-glow-1 {
-    width: 300px;
-    height: 300px;
-  }
-
-  .hero-glow-2 {
-    width: 200px;
-    height: 200px;
-  }
+  font-family : 'Inter',sans-serif;
 }
