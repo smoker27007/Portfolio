@@ -181,7 +181,284 @@ const DNACanvas = () => {
 
                 projected.push({ type: 'sprite', sprite: item.sprite, px: pos.px, py: pos.py, pz: pos.pz, scale: size, alpha: alpha });
 
+            } else if (item.type === 'dust') {
+                let dy = item.y - time * item.speed * 1000;
+                const hRange = totalHeight * 1.5;
+                dy = ((dy % hRange) + hRange) % hRange - hRange / 2 + panY;
+
+                const pos = transform(item.x, dy, item.z);
+                if (pos.pz < 10) continue;
+                
+                const alpha = Math.min(0.5, Math.max(0, 1 - (pos.pz - 300) / 800)) * item.baseScale / 3;
+                const size = item.baseScale * pos.scale;
+
+                projected.push({ type: 'sprite', sprite: item.sprite, px: pos.px, py: pos.py, pz: pos.pz, scale: size, alpha: alpha });
+
+            } else if (item.type === 'line') {
+                const p1 = transform(item.x1, item.y1, item.z1);
+                const p2 = transform(item.x2, item.y2, item.z2);
+                
+                if (p1.pz < 10 || p2.pz < 10) continue;
+                
+                const centerZ = (p1.pz + p2.pz) / 2;
+                const alpha = Math.min(0.6, Math.max(0.02, 1 - (centerZ - 400) / 1000));
+
+                projected.push({
+                    type: 'line', item: item, x1: p1.px, y1: p1.py, x2: p2.px, y2: p2.py,
+                    pz: centerZ, alpha: alpha, scale: (p1.scale + p2.scale) / 2
+                });
+            }
+        }
+
+        projected.sort((a, b) => b.pz - a.pz);
+
+        // Reverting to source-over solves massively GPU lagging composite operations
+        ctx.globalCompositeOperation = "source-over";
+        
+        for (let j = 0; j < projected.length; j++) {
+            const p = projected[j];
+            ctx.globalAlpha = p.alpha;
+            
+            if (p.type === 'sprite') {
+                const s = p.scale;
+                ctx.drawImage(p.sprite, p.px - s/2, p.py - s/2, s, s);
+            } else if (p.type === 'line') {
+                ctx.lineWidth = 1 * p.scale;
+                ctx.strokeStyle = p.item.colorCore + (p.alpha * 0.8) + ")";
+                ctx.beginPath(); ctx.moveTo(p.x1, p.y1); ctx.lineTo(p.x2, p.y2); ctx.stroke();
+            }
+        }
+    };
+
+    const section = canvas.closest(".about-section");
+    const st = section ? ScrollTrigger.create({
+      trigger: section,
+      start: "top 100%",
+      end: "bottom 0%",
+      onEnter: () => { inViewRef.current = true; },
+      onLeave: () => { inViewRef.current = false; },
+      onEnterBack: () => { inViewRef.current = true; },
+      onLeaveBack: () => { inViewRef.current = false; },
+      onUpdate: (self) => { progressRef.current = self.progress; }
+    }) : null;
+
+    if (section) {
+        gsap.fromTo(canvas, 
+            { opacity: 0 }, 
+            { opacity: 1, duration: 2, ease: "power2.inOut", scrollTrigger: { trigger: section, start: "top 70%" } }
+        );
+    }
+
+    if (st) inViewRef.current = st.isActive;
+
+    const tick = () => {
+        if (inViewRef.current) draw();
+        rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", onResize);
+      if (st) st.kill();
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="dna-canvas" />;
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   CONTENT BLOCKS (ALTERNATING LAYOUT)
+   ═══════════════════════════════════════════════════════ */
+
+const BLOCKS = [
+  { align: "left", icon: <Layers size={20} strokeWidth={1.5} />, accent: "#4A9EFF", title: "Cinematic\nInteractions",
+    desc: "Motion is treated as a core architectural component. I engineer fluid, physics-driven interactions using advanced WebGL and GSAP mechanics to create memorable narrative journeys.",
+    tags: ["WebGL", "GSAP", "Micro-interactions"] },
+  { align: "right", icon: <Cpu size={20} strokeWidth={1.5} />, accent: "#C9A96E", title: "Scalable\nArchitecture",
+    desc: "Building resilient front-to-back technical foundations. Tailored React systems and server infrastructure designed securely for high-traffic environments.",
+    tags: ["React ecosystem", "Node engines", "System Design"] },
+  { align: "left", icon: <Diamond size={20} strokeWidth={1.5} />, accent: "#E8724A", title: "Precision\nEngineering",
+    desc: "Translating sophisticated design language into flawlessly executed code. A relentless focus on typography, generous whitespace, and structural visual integrity.",
+    tags: ["UI/UX", "CSS Architecture", "Figma integration"] },
+  { align: "right", icon: <Gauge size={20} strokeWidth={1.5} />, accent: "#10B981", title: "Obsessive\nOptimization",
+    desc: "Hardware-accelerated rendering and strict frame budgeting. Deep commitment to perfect web vitals and ensuring pristine 60fps performance across all device dimensions.",
+    tags: ["Lighthouse 100", "Web Vitals", "Asset optimization"] },
+];
+
+
+/* ═══════════════════════════════════════════════════════
+   ASK ME BUBBLE
+   ═══════════════════════════════════════════════════════ */
+
+const AskMeBubble = () => {
+  const [open, setOpen] = useState(false);
+  const panelRef = useRef(null);
+  const [active, setActive] = useState(0);
+
+  const qna = [
+    { q: "What drives your approach to animation?", a: "I view motion as digital body language. Rather than arbitrarily moving elements, I use physics-driven GSAP to ensure every transition communicates narrative and intent." },
+    { q: "How do you view the relationship between design & code?", a: "They are inseparable. Exceptional engineering relies on impeccable aesthetics, and luxury design requires flawless performance to be fully realized." },
+    { q: "What does your technical stack look like?", a: "I lean heavily into React/Vite for modular front-ends, Node for robust APIs, and leverage raw WebGL or GSAP for hardware-accelerated visual fidelity." },
+    { q: "Are you currently accepting freelance projects?", a: "I selectively partner with ambitious brands and individuals who value digital excellence. Let's start a conversation." },
+    { q: "How do you guarantee performance under heavy graphics?", a: "By strict frame-budgeting. I offload heavy lifting to the GPU, implement aggressive lazy-loading, and prioritize raw DOM efficiency." },
+  ];
+
+  useEffect(() => {
+    if (open && panelRef.current) {
+      gsap.fromTo(panelRef.current, { opacity: 0, y: 16, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power3.out" });
+    }
+  }, [open]);
+
+  const pickQ = (i) => {
+    setActive(i);
+    var el = document.querySelector(".ask-answer-text");
+    if (el) gsap.fromTo(el, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.3 });
+  };
+
+  return (
+    <div className="ask-me-wrapper">
+      <button className={"ask-me-btn " + (open ? "open" : "")} onClick={() => setOpen(function (p) { return !p; })} aria-label="Ask me anything">
+        <span className="ask-ring ask-ring-1" />
+        <span className="ask-ring ask-ring-2" />
+        <span className="ask-inner">
+          <span className="ask-icon">{open ? "\u2715" : "?"}</span>
+          <span className="ask-label-text">Ask Me</span>
+        </span>
+      </button>
+      {open && (
+        <div ref={panelRef} className="ask-panel">
+          <p className="ask-panel-heading">Curious? Ask away.</p>
+          <div className="ask-q-list">
+            {qna.map(function (item, i) {
+              return <button key={i} className={"ask-q-btn " + (active === i ? "active" : "")} onClick={function () { pickQ(i); }}>{item.q}</button>;
+            })}
+          </div>
+          <div className="ask-a-box">
+            <span className="ask-a-quote">&ldquo;</span>
+            <p className="ask-answer-text">{qna[active].a}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+/* ═══════════════════════════════════════════════════════
+   ABOUT SECTION
+   ═══════════════════════════════════════════════════════ */
+
+const AboutSection = () => {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const s = sectionRef.current;
+    if (!s) return;
+    const ctx = gsap.context(() => {
+      gsap.from(".about-label", { y: 20, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: { trigger: s, start: "top 80%", toggleActions: "play none none reverse" } });
+      gsap.from(".about-heading-char", { y: 60, opacity: 0, stagger: 0.015, duration: 0.8, ease: "power4.out", scrollTrigger: { trigger: ".about-heading", start: "top 78%", toggleActions: "play none none reverse" } });
+      gsap.from(".about-sub", { y: 20, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: { trigger: ".about-sub", start: "top 85%", toggleActions: "play none none reverse" } });
+      s.querySelectorAll(".about-block").forEach(function (b, index) {
+        gsap.from(b, { 
+            y: 40, 
+            opacity: 0, 
+            duration: 0.9, 
+            ease: "power3.out", 
+            scrollTrigger: { 
+                trigger: b, 
+                start: "top 85%", 
+                toggleActions: "play none none reverse" 
             } 
+        });
+      });
+      gsap.from(".about-stat", { y: 30, opacity: 0, stagger: 0.08, duration: 0.6, ease: "power3.out", scrollTrigger: { trigger: ".about-stats-row", start: "top 88%", toggleActions: "play none none reverse" } });
+    }, s);
+    return () => ctx.revert();
+  }, []);
+
+  const split = (text) =>
+    text.split("").map((c, i) => (
+      <span key={i} className="about-heading-char">
+        {c === " " ? "\u00A0" : c}
+      </span>
+    ));
+
+  return (
+    <section ref={sectionRef} className="about-section" id="about">
+      <div className="about-glow about-glow-1" />
+      <div className="about-glow about-glow-2" />
+
+      <DNACanvas />
+
+      <div className="about-content-layer">
+        <header className="about-header">
+          <span className="about-label">CRAFT & METHOD</span>
+          <h2 className="about-heading">
+            {split("Designing the")}
+            <br />
+            {split("intersection of")}
+            <br />
+            {split("logic & luxury.")}
+          </h2>
+          <p className="about-sub">
+            I specialize in architecting immersive digital environments that balance premium visual fidelity with uncompromising engineering. Every project is an opportunity to push the limits of modern web technology.
+          </p>
+        </header>
+
+        <div className="about-blocks">
+          {BLOCKS.map(function (b, i) {
+            return (
+              <div key={i} className={`about-block about-block--${b.align}`}>
+                <div className="about-block-inner">
+                  <div className="bento-bg-glow" style={{ background: `radial-gradient(circle at 0% 0%, ${b.accent}15 0%, transparent 60%)` }} />
+                  
+                  <div className="bento-top-row">
+                      <span className="bento-icon-wrap" style={{ color: b.accent }}>
+                          {b.icon}
+                      </span>
+                      <span className="bento-num">{"0" + (i + 1)}</span>
+                  </div>
+                  
+                  <div className="bento-content">
+                      <h3 className="bento-title">{b.title}</h3>
+                      <p className="bento-desc">{b.desc}</p>
+                      
+                      <div className="bento-tags">
+                          {b.tags.map((tag) => (
+                              <span key={tag} className="bento-tag">{tag}</span>
+                          ))}
+                      </div>
+                  </div>
+                  
+                  <div className="about-block-accent-bar" style={{ "--block-accent": b.accent }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="about-ask-row">
+          <AskMeBubble />
+        </div>
+
+        <div className="about-stats-row">
+          {[
+            { n: "3+", l: "Years Expertise" },
+            { n: "25+", l: "Digital Products" },
+            { n: "15+", l: "Brands Elevated" },
+            { n: "100", l: "Lighthouse Score" },
+          ].map(function (s, i) {
+            return (
+              <div key={i} className="about-stat">
+                <span className="about-stat-num">{s.n}</span>
+                <span className="about-stat-label">{s.l}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
