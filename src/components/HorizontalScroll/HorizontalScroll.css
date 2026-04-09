@@ -26,7 +26,6 @@
   backface-visibility: hidden;
 }
 
-/* Project Container - Each project card takes full viewport width */
 .project-section {
   width: 100vw;
   height: 100vh;
@@ -40,7 +39,7 @@
 }
 
 @media (max-width: 1024px) {
-  .project-section {
+  .poject-section {
     padding: 0 60px;
   }
 }
@@ -77,7 +76,6 @@
   }
 }
 
-/* Portfolio Title Section */
 .portfolio-title-section {
   background: linear-gradient(135deg, rgba(12, 24, 33, 0.95), rgba(19, 35, 48, 0.95));
   position: relative;
@@ -88,7 +86,8 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(123, 97, 255, 0.05), transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(123, 97, 255, 0.05),
+  transparent 70%);
   pointer-events: none;
 }
 
@@ -145,12 +144,10 @@
   opacity: 0.3;
 }
 
-/* Smooth transitions for section changes */
 :root {
   scroll-behavior: smooth;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .scroll-section-inner {
     gap: 0;
@@ -171,7 +168,6 @@
   }
 }
 
-/* Reduce motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .scroll-hint-arrow svg {
     animation: none;
@@ -189,12 +185,10 @@
   margin: clamp(24px, 4vh, 40px) auto 0;
 }
 
-/* Smooth transitions for section changes */
 :root {
   scroll-behavior: smooth;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .scroll-section-inner {
     gap: 0;
@@ -215,7 +209,6 @@
   }
 }
 
-/* Reduce motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .scroll-hint-arrow svg,
   .progress-shimmer {
