@@ -1,74 +1,181 @@
 .scroll-section-outer {
   position: relative;
+  background: linear-gradient(135deg, rgba(12, 24, 33, 0.98), rgba(19, 35, 48, 0.98));
+  overflow: hidden;
+  width: 100%;
 }
 
 .scroll-section-inner {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.scroll-container-wrapper {
   display: flex;
   gap: 0;
   padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Project Container - Each project card takes full viewport width */
+.project-section {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .project-section {
+    padding: 0 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-section {
+    padding: 0 40px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .scroll-progress {
   position: fixed;
   bottom: 0;
   left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-warm), var(--accent-gold));
+  height: 3px;
+  background: linear-gradient(90deg, #7b61ff, #ff6b4a, #00d4aa, #ffb84d, #7b61ff);
+  background-size: 200% 100%;
   transform-origin: left;
   pointer-events: none;
   z-index: 999;
+  box-shadow: 0 0 20px rgba(123, 97, 255, 0.5);
+  animation: progress-shimmer 3s linear infinite;
 }
 
-.works-intro {
-  height: 100vh;
+@keyframes progress-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Portfolio Title Section */
+.portfolio-title-section {
+  background: linear-gradient(135deg, rgba(12, 24, 33, 0.95), rgba(19, 35, 48, 0.95));
+  position: relative;
+  overflow: hidden;
+}
+
+.portfolio-title-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(123, 97, 255, 0.05), transparent 70%);
+  pointer-events: none;
+}
+
+.section-label {
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.section-number {
+  text-shadow: 0 0 40px rgba(123, 97, 255, 0.1);
+}
+
+.accent-dot {
+  color: var(--accent-warm, #ffb84d);
+}
+
+.scroll-hint-arrow {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: relative;
+  gap: 0.5rem;
+}
+
+.scroll-hint-arrow svg {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  animation: scroll-hint-pulse 2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes scroll-hint-pulse {
+  0% {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(8px);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+}
+
+.divider-line {
   background: linear-gradient(
-    180deg,
-    #5ba3e0 0%,
-    #a8c8e8 25%,
-    #d9c8b0 50%,
-    var(--bg-light) 100%
+    90deg,
+    transparent,
+    var(--text-secondary),
+    transparent
   );
+  opacity: 0.3;
 }
 
-.works-intro .section-number-bg {
-  position: absolute;
-  font-family: var(--font-display);
-  font-size: 22vw;
-  font-weight: 800;
-  color: rgba(26, 35, 50, 0.03);
-  pointer-events: none;
-  user-select: none;
+/* Smooth transitions for section changes */
+:root {
+  scroll-behavior: smooth;
 }
 
-.works-intro .works-content {
-  position: relative;
-  z-index: 1;
-  text-align: center;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .scroll-section-inner {
+    gap: 0;
+    padding: 0;
+  }
+
+  .scroll-hint-arrow {
+    gap: 0.25rem;
+  }
+
+  .scroll-hint-arrow svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .scroll-progress {
+    height: 2px;
+  }
 }
 
-.works-intro .works-label {
-  font-family: var(--font-inter);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: var(--text-light-secondary);
-  margin-bottom: clamp(24px, 4vh, 40px);
-}
-
-.works-intro .works-title {
-  font-family: var(--font-display);
-  font-size: clamp(48px, 10vw, 140px);
-  font-weight: 800;
-  line-height: 0.9;
-  letter-spacing: -0.03em;
-  color: var(--text-dark);
+/* Reduce motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint-arrow svg {
+    animation: none;
+  }
 }
 
 .works-intro .accent-dot {
@@ -82,9 +189,36 @@
   margin: clamp(24px, 4vh, 40px) auto 0;
 }
 
+/* Smooth transitions for section changes */
+:root {
+  scroll-behavior: smooth;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .scroll-section-inner {
     gap: 0;
     padding: 0;
+  }
+
+  .scroll-hint-arrow {
+    gap: 0.25rem;
+  }
+
+  .scroll-hint-arrow svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .scroll-progress {
+    height: 2px;
+  }
+}
+
+/* Reduce motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint-arrow svg,
+  .progress-shimmer {
+    animation: none;
   }
 }

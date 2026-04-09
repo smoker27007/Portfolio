@@ -1,3 +1,10 @@
+import {useEffect,useRef} from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/scrollTirgger";
+import "./ProjectSection.css";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const ProjectSection = ({
   number,
   total,
@@ -7,72 +14,193 @@ const ProjectSection = ({
   image,
   accentColor,
 }) => {
-  return (
+  const sectionRef = useRef(null);
+  const contentRef = useRef(null);
+  const imageRef = useRef(null);
+  const numberRef = useRef(null);
+  const buttonRef = useRef(null);
+  const isFirstRef = useRef(number === "01");
+  const isLastRef = useRef(number === total);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Simple, clean entrance timeline
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out", duration: 0.8 },
+      });
+
+      // Staggered entrance for all elements
+      tl.fromTo(
+        numberRef.current,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.6 }
+      )
+        .fromTo(
+          contentRef.current?.querySelectorAll(".project-title"),
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, stagger: 0.12 },
+          0.1
+        )
+        .fromTo(
+          contentRef.current?.querySelectorAll(".project-meta"),
+          { opacity: 0, x: -30 },
+          { opacity: 1, x: 0, stagger: 0.1, duration: 0.7 },
+          0.3
+        )
+        .fromTo(
+          imageRef.current,
+          { opacity: 0, scale: 0.95 },
+          { opacity: 1, scale: 1, duration: 0.9 },
+          0.2
+        )
+        .fromTo(
+          buttonRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.7 },
+          0.5
+        );
+
+      // Subtle mouse parallax on hover
+      const handleMouseMove = (e) => {
+        if (!sectionRef.current || !imageRef.current) return;
+
+        const rect = sectionRef.current.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+        gsap.to(imageRef.current, {
+          x: x * 15,
+          y: y * 15,
+          duration: 1,
+          ease: "power2.out",
+          overwrite: "auto",
+        });
+      };
+
+      const handleMouseLeave = () => {
+        gsap.to(imageRef.current, {
+          x: 0,
+          y: 0,
+          duration: 1,
+          ease: "power2.out",
+        });
+      };
+
+      sectionRef.current.addEventListener("mousemove", handleMouseMove);
+      sectionRef.current.addEventListener("mouseleave", handleMouseLeave);
+
+      return () => {
+        sectionRef.current?.removeEventListener("mousemove", handleMouseMove);
+        sectionRef.current?.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [number]);
+
+
+  return(
     <div
-      className="relative flex-shrink-0 w-screen h-screen flex items-center justify-between px-16 py-20"
+      ref={sectionRef}
+      className="project-section"
       style={{
-        minWidth: "100vw",
-        background: `linear-gradient(135deg, rgba(12, 24, 33, 0.9), rgba(19, 35, 48, 0.9))`,
+        "--accent-color": accentColor,
       }}
     >
-      <div className="absolute top-8 left-16 text-sm font-mono tracking-widest">
+      {/* Background gradient */}
+      <div
+        className="project-section-bg"
+        style={{
+          background: `linear-gradient(135deg, rgba(12, 24, 33, 0.95), rgba(19, 35, 48, 0.95)), radial-gradient(circle at 80% 50%, ${accentColor}08, transparent 50%)`,
+        }}
+      />
+
+      {/* Project number */}
+      <div ref={numberRef} className="project-number">
         <span style={{ color: accentColor }}>
           {number}
-          <span style={{ color: "var(--text-secondary)" }}> / {total}</span>
+          <span className="project-total"> / {total}</span>
         </span>
       </div>
 
-      <div className="relative z-10 max-w-md">
-        <h3 className="text-5xl font-display font-bold leading-tight mb-6 whitespace-pre-wrap">
-          {title}
-        </h3>
-        <div className="space-y-4 mb-8">
-          <div>
-            <p style={{ color: "var(--text-secondary)", fontSize: "12px" }}>
-              CATEGORY
-            </p>
-            <p style={{ color: "var(--text-primary)" }}>{category}</p>
+      {/* Main content container */}
+      <div className="project-content-wrapper">
+        {/* Left content section */}
+        <div ref={contentRef} className="project-content">
+          <div className="project-title-group">
+            <h3 className="project-title">{title.split("\n")[0]}</h3>
+            {title.includes("\n") && (
+              <h3 className="project-title">{title.split("\n")[1]}</h3>
+            )}
           </div>
-          <div>
-            <p style={{ color: "var(--text-secondary)", fontSize: "12px" }}>
-              MY ROLE
-            </p>
-            <p style={{ color: "var(--text-primary)" }}>{role}</p>
+
+          {/* Meta information */}
+          <div className="project-meta-group">
+            <div className="project-meta">
+              <p className="meta-label">CATEGORY</p>
+              <p className="meta-value">{category}</p>
+            </div>
+            <div className="project-meta">
+              <p className="meta-label">MY ROLE</p>
+              <p className="meta-value">{role}</p>
+            </div>
           </div>
+
+          {/* CTA Button */}
+          <button ref={buttonRef} className="project-cta-button">
+            <span className="button-text">EXPLORE PROJECT</span>
+            <span className="button-arrow">→</span>
+            <div className="button-background" style={{ background: accentColor }} />
+          </button>
         </div>
-        <button className="cta-button text-sm">
-          EXPLORE PROJECT
-          <span>→</span>
-        </button>
+
+        {/* Right image section */}
+        <div className="project-image-section">
+          <div
+            className="project-divider"
+            style={{ borderLeftColor: `${accentColor}40` }}
+          />
+
+          <div className="project-image-container">
+            <div
+              className="project-image-frame"
+              style={{
+                background: `linear-gradient(135deg, ${accentColor}15, transparent)`,
+                borderColor: `${accentColor}50`,
+              }}
+            >
+              {image && (
+                <>
+                  <img
+                    ref={imageRef}
+                    src={image}
+                    alt={title}
+                    className="project-image"
+                    loading="lazy"
+                  />
+                  <div
+                    className="image-overlay"
+                    style={{ background: `radial-gradient(circle at center, transparent 0%, ${accentColor}10 100%)` }}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Accent indicator */}
+          <div
+            className="project-accent-dot"
+            style={{ background: accentColor }}
+          />
+        </div>
       </div>
 
-      <div
-        className="relative flex-1 h-full flex items-center justify-center"
-        style={{
-          borderLeft: `1px solid ${accentColor}40`,
-        }}
-      >
-        <div
-          className="w-96 h-96 rounded-lg overflow-hidden"
-          style={{
-            background: `linear-gradient(135deg, ${accentColor}20, transparent)`,
-            border: `1px solid ${accentColor}40`,
-          }}
-        >
-          {image && (
-            <img
-              src={image}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-          )}
-        </div>
+      {/* Scroll indicator (optional) */}
+      <div className="project-scroll-indicator">
+        <span style={{ color: accentColor }}>SCROLL</span>
       </div>
-
-      <div
-        className="absolute bottom-8 right-16 w-3 h-3 rounded-full"
-        style={{ background: accentColor }}
-      />
     </div>
   );
 };
