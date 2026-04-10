@@ -22,7 +22,7 @@ const Contact = () => {
             </div>
             <div className="contact-item">
               <Phone size={20} className="icon" />
-              <span>+1 (555) 000-0000</span>
+              <span>+91 ----------</span>
             </div>
             <div className="contact-item">
               <MapPin size={20} className="icon" />

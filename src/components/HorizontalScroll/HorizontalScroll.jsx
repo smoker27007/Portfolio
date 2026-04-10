@@ -16,8 +16,8 @@ const HorizontalScroll = ({ children, onProgressUpdate }) => {
   useLayoutEffect(() => {
     const sectionEl = sectionRef.current;
     const triggerEl = triggerRef.current;
-    const containerE1 = containerRef.current;
-    if (!sectionE1 || !triggerE1 || !containerE1) return;
+    const containerEl = containerRef.current;
+    if (!sectionEl || !triggerEl || !containerEl) return;
 
     const ctx = gsap.context(() => {
       if (titleRef.current) {
@@ -37,16 +37,16 @@ const HorizontalScroll = ({ children, onProgressUpdate }) => {
 
       let lastReportedProgress = 0;
       const tween = gsap.fromTo(
-        containerE1,
+        containerEl,
         { x: 0 },
         {
-          x: () => -(containerE1.scrollWidth - window.innerWidth),
+          x: () => -(containerEl.scrollWidth - window.innerWidth),
           ease: "none",
           force3D: true,
           scrollTrigger: {
-            trigger: triggerE1,
+            trigger: triggerEl,
             start: "top top",
-            end: () => `+=${containerE1.scrollWidth - window.innerWidth}`,
+            end: () => `+=${containerEl.scrollWidth - window.innerWidth}`,
             scrub: 0.6,
             pin: true,
             anticipatePin: 1,
@@ -111,7 +111,7 @@ const HorizontalScroll = ({ children, onProgressUpdate }) => {
             </p>
             <div className="scroll-hint-arrow">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 12h14M12 517 7-7 7"/>
+                <path d="M12 5v14m-7-7l7 7 7-7"/>
               </svg>
             </div>
           </div>

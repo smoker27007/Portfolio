@@ -3,12 +3,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AnimatedFace from "../../components/AnimatedFace/AnimatedFace";
 import "./Hero.css";
+import avatar1 from "../../assets/heroBG.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Precompute a stable set of shard "crack origin points" in normalised [0,1] space.
-// Each character is assigned to its nearest crack point, so adjacent characters
-// fly in the same direction — giving the visual impression of glass plates separating.
 const CRACK_ORIGINS = Array.from({ length: 12 }, (_, i) => ({
   x: 0.05 + (i % 4) * 0.3 + Math.random() * 0.1,
   y: 0.1 + Math.floor(i / 4) * 0.4 + Math.random() * 0.15,
@@ -16,13 +14,14 @@ const CRACK_ORIGINS = Array.from({ length: 12 }, (_, i) => ({
 
 const Hero = () => {
   const sectionRef = useRef(null);
+  const bgRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     const ctx = gsap.context(() => {
-      // ── Entry animation ──────────────────────────────────────────
+  
       const entryTL = gsap.timeline({ defaults: { ease: "power4.out" } });
 
       gsap.set(".hero-char", { opacity: 0, y: 100, scale: 0.6 });
@@ -38,8 +37,85 @@ const Hero = () => {
         .to(".hero-divider-line", { scaleX: 1, duration: 1.8, ease: "power4.inOut" }, 1)
         .to(".hero-role-tag", { opacity: 1, y: 0, stagger: 0.12, duration: 1.2, ease: "back.out(1.8)" }, 1.2)
         .to(".hero-sub", { opacity: 1, y: 0, stagger: 0.15, duration: 1.2, ease: "power3.out" }, 1.4);
+      
+      const cursorDot = section.querySelector('.hero-cursor-dot');
+      gsap.set(bgRef.current,{opacity:1});
+      if(cursorDot) gsap.set(cursorDot,{xPercent:-50,yPercent:-50,opacity:0});
+      let pos = {x:window.innerWidth / 2,y:window.innerHeight /2,radius:0};
+      const xTo = gsap.quickTo(pos,"x",{duration:0.4,ease:"power3.out"});
+      const yTo = gsap.quickTo(pos,"y",{duration:0.4,ease:"power3.out"});
+      const radiusTo = gsap.quickTo(pos,"radius",{duration:0.2,ease:"power3.out"});
+      let cursorXTo,cursorYTo;
+      if(cursorDot) {
+        cursorXTo = gsap.quickTo(cursorDot,"x",{duration:0.2,ease:"power3.out"});
+        cursorYTo = gsap.quickTo(cursorDot,"y",{duration:0.2,ease:"power3.out"});
+      }
+      const ticker = () => {
+        if (!bgRef.current) return;
+        const r = pos.radius;
+        if (r === 0) {
+          bgRef.current.style.webkitClipPath = `polygon(0 0, 0 0, 0 0)`;
+          bgRef.current.style.clipPath = `polygon(0 0, 0 0, 0 0)`;
+          return;
+        }
 
-      // ── Character hover ───────────────────────────────────────────
+        const speed = Math.sqrt(dx * dx + dy * dy);
+        if (speed > 0.5) {
+          pos.angle = Math.atan2(dy, dx);
+        } else if (pos.angle === undefined) {
+          pos.angle = -Math.PI / 4;
+        }
+
+        const length = r * 1.2 + speed * 15;
+        const thickness = Math.max(r * 0.05, r * 0.25 - speed * 0.2);
+        const slant = thickness * 3;
+
+        const pts = [
+          { x: -length + slant, y: - thickness },
+          { x: length + slant, y: -thickness },
+          { x: length - slant, y: thickness },
+          { x: -length - slant, y: thickness }
+        ];
+
+        const cos = Math.cos(pos.angle);
+        const sin = Math.sin(pos.angle);
+
+        const polyStr = pts.map(p => {
+          const rx = p.x * cos - p.y * sin;
+          const ry = p.x * sin + p.y * cos;
+          return `calc(${pos.x}px + ${rx}px) calc(${pos.y}px + ${ry}px)`;
+        }).join(', ');
+
+        const path = `polygon(${polyStr})`;
+        bgRef.current.style.webkitclipPath = path;
+        bgRef.current.style.clipPath = path;
+      };
+      gsap.ticker.add(ticker);
+      const handleMouseMove = (e) => {
+        const rect = section.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        xTo(x);
+        yTo(y);
+        radiusTo(300);
+        if(cursorDot) {
+          cursorXTo(x);
+          cursorYTo(y);
+          gsap.to(cursorDot, {opacity:1, duration:0.3, overwrite: "auto"});
+        }
+      };
+
+      const handleMouseLeave = () => {
+        radiusTo(0);
+        if (cursortDot) {
+          gsap.to(cursorDot, { opacity: 0, duration: 0.3, overwrite: "auto" });
+        }
+      };
+
+      section.addEventListener("mousemove", handleMouseMove);
+      section.addEventListener("mouseleave", handleMouseLeave);
+
       const chars = section.querySelectorAll(".hero-char");
       chars.forEach((char) => {
         char.addEventListener("mouseenter", () =>
@@ -50,7 +126,6 @@ const Hero = () => {
         );
       });
 
-      // ── Scroll dismantling: glass-shard style ─────────────────────
       const scrollTL = gsap.timeline({
         scrollTrigger: {
           trigger: section,
@@ -63,18 +138,15 @@ const Hero = () => {
         },
       });
 
-      // Measure the hero section so we can compute full-viewport scatter
       const getViewport = () => ({
         vw: window.innerWidth,
         vh: window.innerHeight,
       });
 
-      // Assign each char a glass-shard burst vector based on nearest crack origin
       chars.forEach((char) => {
         const rect = char.getBoundingClientRect();
         const { vw, vh } = getViewport();
 
-        // Normalised position of this character on the screen
         const nx = (rect.left + rect.width / 2) / vw;
         const ny = (rect.top + rect.height / 2) / vh;
 
@@ -157,6 +229,9 @@ const Hero = () => {
       });
 
       return () => {
+        gsap.ticker.remove(ticker);
+        section.removeEventListener("mousemove", handleMouseMove);
+        section.removeEventListener("mouseleave", handleMouseLeave);
       };
     }, section);
 
@@ -172,6 +247,12 @@ const Hero = () => {
 
   return (
     <section ref={sectionRef} className="hero-section" id="home">
+      <div 
+        ref={bgRef} 
+        className="hero-bg"
+        style={{ backgroundImage: `url(${avatar1})` }}
+      ></div>
+      <div className="hero-cursor-dot" />
       <div className="hero-sticky">
         <div className="hero-glow hero-glow-1" />
         <div className="hero-glow hero-glow-2" />
@@ -210,7 +291,7 @@ const Hero = () => {
 
             <div className="hero-bottom">
               <p className="hero-sub hero-description">
-                Crafting digital experiences that merge functionality with
+                Crafting  digital experiences that merge functionality with
                 high-end aesthetics. Specialized in modern web architectures
                 &amp; immersive animations.
               </p>
