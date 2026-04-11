@@ -50,11 +50,17 @@ function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const handleProgress = useCallback((p) => setScrollProgress(p), []);
 
-  useEffect(() => {
+  
+useEffect(() => {
     const cursor = document.querySelector(".global-cursor");
     const innerCircle = document.querySelector(".global-cursor-inner");
     
     if (!cursor) return;
+
+    // Position cursor at center on load
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    gsap.set(cursor, { left: `${centerX}px`, top: `${centerY}px`, opacity: 1 });
 
     // Animate the inner dot
     gsap.to(innerCircle, {
@@ -70,9 +76,9 @@ function App() {
       const y = e.clientY;
       
       gsap.to(cursor, {
-        left: x - 25,
-        top: y - 25,
-        duration: 0.3,
+        left: `${x}px`,
+        top: `${y}px`,
+        duration: 0.1,
         ease: "power2.out",
         overwrite: "auto"
       });
@@ -94,24 +100,33 @@ function App() {
       });
     };
 
+    const handleDragStart = (e) => {
+      e.preventDefault();
+    };
+
     document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseenter", handleMouseEnter);
-    document.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("mouseenter", handleMouseEnter);
+    window.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("dragstart", handleDragStart);
+    document.addEventListener("selectstart", (e) => e.preventDefault());
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseenter", handleMouseEnter);
-      document.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("mouseenter", handleMouseEnter);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("dragstart", handleDragStart);
+      document.removeEventListener("selectstart", (e) => e.preventDefault());
     };
   }, []);
-
   return (
-    <main>
+    <>
       {/* Global custom cursor */}
       <div className="global-cursor">
         <div className="global-cursor-inner"></div>
         <div className="global-cursor-glow"></div>
       </div>
+      
+      <main>
 
       <Navbar />
 
@@ -127,6 +142,7 @@ function App() {
 
       <ContactSection />
     </main>
+    </>
   );
 }
 

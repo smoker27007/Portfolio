@@ -8,19 +8,19 @@
 }
 
 .hero-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  pointer-events: none;
-  z-index: 2;
-  will-change: -webkit-mask-image, mask-image;
-  opacity: 1;
-  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%);
-  mask-image: radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%);
+ position:absolute;
+ top:0;
+ left:0;
+ width:100%;
+ height:100%;
+ background-size:cover;
+ background-position:center;
+ pointer-events:none;
+ z-index:2;
+ will-change:-webkit-mask-image,mask-image;
+ opacity:1;
+ -webkit-mask-image:radial-gradient(circle 0px at 50% 50% , rgba(0,0,0,1) 0%,rgba(0,0,0,0)50%);
+ mask-image:radial-gradient(circle 0px at 50% 50%,rgba(0,0,0,1) 0% ,rgba(0,0,0,0) 50%);
 }
 
 .hero-sticky {

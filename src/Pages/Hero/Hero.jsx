@@ -41,47 +41,96 @@ const Hero = () => {
         .to(".hero-role-tag", { opacity: 1, y: 0, stagger: 0.12, duration: 1.2, ease: "back.out(1.8)" }, 1.2)
         .to(".hero-sub", { opacity: 1, y: 0, stagger: 0.15, duration: 1.2, ease: "power3.out" }, 1.4);
       
-      //--- Cursor circular reveal effect ------
-      const spotlightRadius = 150;
+      //--- Cursor circular reveal effect - Enhanced Bubble animation ------
+      const spotlightRadius = 100;
+      let mouseX = 0, mouseY = 0;
+      let animationFrameId = null;
       
       const handleMouseMove = (e) => {
-        if (!bgRef.current || !section) return;
+      if (!bgRef.current || !section) return;
         
         const rect = section.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      };
+      
+      const animateBubble = () => {
+        if (!bgRef.current) return;
         
-        // Animate the spotlight size with a subtle pulse
-        const pulseRadius = spotlightRadius + Math.sin(Date.now() * 0.003) * 20;
-        const maskGradient = `radial-gradient(circle ${pulseRadius}px at ${x}px ${y}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0) 85%)`;
+        const time = Date.now() * 0.001;
+        
+        // Create a more dynamic pulsing bubble with multiple wave effects
+        const pulse1 = Math.sin(time * 2) * 15;
+        const pulse2 = Math.sin(time * 1.5 + Math.PI / 3) * 10;
+        const pulse3 = Math.sin(time * 0.8 + Math.PI / 2) * 8;
+        
+        const dynamicRadius = spotlightRadius + pulse1 + pulse2 + pulse3;
+        
+        // Main bubble mask with smooth gradient
+        const maskGradient = `radial-gradient(
+          circle ${dynamicRadius}px at ${mouseX}px ${mouseY}px,
+          rgba(0,0,0,1) 0%,
+          rgba(0,0,0,0.95) 65%,
+          rgba(0,0,0,0.7) 80%,
+          rgba(0,0,0,0.3) 90%,
+          rgba(0,0,0,0) 100%
+        )`;
+        
         bgRef.current.style.webkitMaskImage = maskGradient;
         bgRef.current.style.maskImage = maskGradient;
+        
+        // Multi-layer glow effect with pulsing intensity
+        const glowIntensity = 0.5 + Math.sin(time * 2.5) * 0.3;
+        const glowSize = dynamicRadius + 40;
+        
+        bgRef.current.style.boxShadow = `
+          inset 0 0 ${100 * glowIntensity}px rgba(0, 212, 170, ${0.6 * glowIntensity}),
+          inset 0 0 ${150 * glowIntensity}px rgba(74, 158, 255, ${0.3 * glowIntensity}),
+          inset 0 0 ${200 * glowIntensity}px rgba(184, 77, 255, ${0.1 * glowIntensity})
+        `;
+        
+        animationFrameId = requestAnimationFrame(animateBubble);
       };
       
       const handleMouseLeave = () => {
         if (!bgRef.current) return;
         
-        // Fade out the reveal
+        // Cancel animation frame
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        
+        // Smooth fade out animation
         gsap.to(bgRef.current, {
-          duration: 0.6,
+          duration: 1.2,
           ease: "power2.out",
-          onUpdate: () => {
-            const progress = gsap.getProperty(bgRef.current, "progress") || 0;
+          onUpdate: function() {
+            const progress = this.progress();
             const currentRadius = spotlightRadius * (1 - progress);
-            const maskGradient = `radial-gradient(circle ${currentRadius}px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%)`;
-            bgRef.current.style.webkitMaskImage = maskGradient;
-            bgRef.current.style.maskImage = maskGradient;
+            const hideMask = `radial-gradient(
+              circle ${currentRadius}px at 50% 50%,
+              rgba(0,0,0,1) 0%,
+              rgba(0,0,0,0) 70%
+            )`;
+            bgRef.current.style.webkitMaskImage = hideMask;
+            bgRef.current.style.maskImage = hideMask;
+            bgRef.current.style.boxShadow = `inset 0 0 ${200 * (1 - progress)}px rgba(0, 212, 170, ${0.6 * (1 - progress)})`;
           },
           onComplete: () => {
-            const hiddenMask = `radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%)`;
-            bgRef.current.style.webkitMaskImage = hiddenMask;
-            bgRef.current.style.maskImage = hiddenMask;
+            const fullHideMask = `radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%)`;
+            bgRef.current.style.webkitMaskImage = fullHideMask;
+            bgRef.current.style.maskImage = fullHideMask;
+            bgRef.current.style.boxShadow = "none";
           }
-        }, 0);
+        });
       };
       
       section.addEventListener("mousemove", handleMouseMove);
       section.addEventListener("mouseleave", handleMouseLeave);
+      section.addEventListener("mouseenter", () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animateBubble();
+      });
 
       // ── Character hover ───────────────────────────────────────────
       const chars = section.querySelectorAll(".hero-char");
@@ -201,6 +250,9 @@ const Hero = () => {
       });
 
       return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
       };
     }, section);
 
