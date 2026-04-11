@@ -182,3 +182,123 @@
     border-right-color: var(--border);
   }
 }
+
+/* ── Global custom cursor ────────────────────────────────────────── */
+
+main {
+  cursor: none;
+}
+
+.global-cursor {
+  position: fixed;
+  left: -50px;
+  top: -50px;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  will-change: left, top, opacity;
+}
+
+.global-cursor-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #4a9eff, #c9a96e);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(74, 158, 255, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.global-cursor-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border: 2px solid;
+  border-image: linear-gradient(135deg, rgba(74, 158, 255, 0.8), rgba(201, 169, 110, 0.4)) 1;
+  border-radius: 50%;
+  animation: global-cursor-pulse 1.5s ease-in-out infinite, global-cursor-rotate 6s linear infinite;
+  box-shadow: 
+    0 0 15px rgba(74, 158, 255, 0.5),
+    inset 0 0 15px rgba(74, 158, 255, 0.2),
+    0 0 30px rgba(74, 158, 255, 0.3);
+}
+
+/* Additional animated circles */
+.global-cursor::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border: 1.5px solid rgba(74, 158, 255, 0.3);
+  border-radius: 50%;
+  animation: global-cursor-expand 2s ease-out infinite;
+}
+
+.global-cursor::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35px;
+  height: 35px;
+  border: 1px solid rgba(201, 169, 110, 0.4);
+  border-radius: 50%;
+  animation: global-cursor-contract 2s ease-in infinite;
+}
+
+@keyframes global-cursor-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+}
+
+@keyframes global-cursor-rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes global-cursor-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes global-cursor-contract {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+}

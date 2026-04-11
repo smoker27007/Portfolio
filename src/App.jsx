@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import gsap from "gsap";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./Pages/Hero/Hero";
 import AboutSection from "./components/AboutSection/AboutSection";
@@ -49,8 +50,69 @@ function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const handleProgress = useCallback((p) => setScrollProgress(p), []);
 
+  useEffect(() => {
+    const cursor = document.querySelector(".global-cursor");
+    const innerCircle = document.querySelector(".global-cursor-inner");
+    
+    if (!cursor) return;
+
+    // Animate the inner dot
+    gsap.to(innerCircle, {
+      boxShadow: "0 0 20px rgba(74, 158, 255, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.5)",
+      duration: 1.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    const handleMouseMove = (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      
+      gsap.to(cursor, {
+        left: x - 25,
+        top: y - 25,
+        duration: 0.3,
+        ease: "power2.out",
+        overwrite: "auto"
+      });
+    };
+
+    const handleMouseEnter = () => {
+      gsap.to(cursor, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(cursor, {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
   return (
     <main>
+      {/* Global custom cursor */}
+      <div className="global-cursor">
+        <div className="global-cursor-inner"></div>
+        <div className="global-cursor-glow"></div>
+      </div>
+
       <Navbar />
 
       <Hero />

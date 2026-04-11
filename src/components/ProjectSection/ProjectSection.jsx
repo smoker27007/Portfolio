@@ -13,6 +13,9 @@ const ProjectSection = ({
   role,
   image,
   accentColor,
+  year,
+  badge,
+  onExplore,
 }) => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
@@ -21,6 +24,7 @@ const ProjectSection = ({
   const buttonRef = useRef(null);
   const isFirstRef = useRef(number === "01");
   const isLastRef = useRef(number === total);
+  const badgeRef = useRef(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -30,7 +34,6 @@ const ProjectSection = ({
       const tl = gsap.timeline({
         defaults: { ease: "power3.out", duration: 0.8 },
       });
-
       // Staggered entrance for all elements
       tl.fromTo(
         numberRef.current,
@@ -61,6 +64,8 @@ const ProjectSection = ({
           { opacity: 1, y: 0, duration: 0.7 },
           0.5
         );
+
+        
 
       // Subtle mouse parallax on hover
       const handleMouseMove = (e) => {
@@ -131,9 +136,14 @@ const ProjectSection = ({
         <div ref={contentRef} className="project-content">
           <div className="project-title-group">
             <h3 className="project-title">{title.split("\n")[0]}</h3>
-            {title.includes("\n") && (
-              <h3 className="project-title">{title.split("\n")[1]}</h3>
-            )}
+              {badge && (
+                <div ref={badgeRef} className="project-badge">
+                  <span className="project-badge-dot"></span>
+                  {badge.toUpperCase()}
+                  </div>
+              )}
+              {title.includes("\n") && (
+                <h3 className="project-title">{title.split("\n")[1]}</h3>)}
           </div>
 
           {/* Meta information */}
@@ -154,6 +164,8 @@ const ProjectSection = ({
             <span className="button-arrow">→</span>
             <div className="button-background" style={{ background: accentColor }} />
           </button>
+          <button ref={buttonRef} className="project-cta-button"></button>
+          <button ref={buttonRef} className="project-cta-button"></button>
         </div>
 
         {/* Right image section */}

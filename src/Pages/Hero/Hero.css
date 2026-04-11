@@ -17,25 +17,10 @@
   background-position: center;
   pointer-events: none;
   z-index: 2;
-  will-change: clip-path;
-  -webkit-clip-path: polygon(0 0, 0 0, 0 0);
-  clip-path: polygon(0 0, 0 0, 0 0);
-}
-.hero-cursor-dot {
-  position:absolute;
-  top: 0;
-  left: 0;
-  width:12px;
-  height:12px;
-  background:white;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:9999;
-  opacity:0;
-  transform:translate(-50%,-50%);
-  box-shadow: 0 0 10px rgba(255,255,255,0.5);
-  mix-blend-mode:difference;
-
+  will-change: -webkit-mask-image, mask-image;
+  opacity: 1;
+  -webkit-mask-image: radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%);
+  mask-image: radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%);
 }
 
 .hero-sticky {
@@ -48,6 +33,8 @@
   background: var(--bg-primary);
   overflow: hidden;
 }
+
+/* ── Glow orbs ─────────────────────────────────────────────── */
 
 .hero-glow {
   position: absolute;
@@ -95,6 +82,8 @@
   );
 }
 
+/* ── Content layout ────────────────────────────────────────── */
+
 .hero-content {
   position: relative;
   z-index: 10;
@@ -108,6 +97,8 @@
   width: 100%;
   max-width: 700px;
 }
+
+/* ── Badge ─────────────────────────────────────────────────── */
 
 .hero-badge {
   display: inline-flex;
@@ -145,13 +136,15 @@
   color: var(--text-secondary);
 }
 
+/* ── Title ─────────────────────────────────────────────────── */
+
 .hero-title-wrapper {
   margin-bottom: clamp(12px, 2vw, 20px);
   transform-style: preserve-3d;
 }
 
 .hero-title-line {
-  overflow: visible;
+  overflow: visible; /* must be visible so chars can fly outside during burst */
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -166,6 +159,11 @@
   margin-bottom: 0;
   white-space: nowrap;
 }
+
+/* ── Individual characters ─────────────────────────────────── */
+/* GSAP moves these across the full viewport during the glass-shard
+   dismantling, so they must be individually composited and not
+   clipped by any ancestor overflow:hidden.                      */
 
 .hero-char {
   display: inline-block;
@@ -187,6 +185,8 @@
   font-size: 1.2em;
 }
 
+/* ── Divider ───────────────────────────────────────────────── */
+
 .hero-divider-line {
   width: 100%;
   height: 1px;
@@ -200,6 +200,8 @@
   transform-origin: left;
   will-change: transform, opacity;
 }
+
+/* ── Role tags ─────────────────────────────────────────────── */
 
 .hero-roles {
   display: flex;
@@ -233,6 +235,8 @@
   box-shadow: 0 4px 20px rgba(74, 158, 255, 0.15);
 }
 
+/* ── Bottom row ────────────────────────────────────────────── */
+
 .hero-bottom {
   display: flex;
   align-items: flex-end;
@@ -246,6 +250,8 @@
   line-height: 1.7;
   max-width: 400px;
 }
+
+/* ── Scroll CTA ────────────────────────────────────────────── */
 
 .hero-scroll-cta {
   display: flex;
@@ -287,6 +293,8 @@
   0%, 100% { transform: translateY(0);   opacity: 1;   }
   50%       { transform: translateY(16px); opacity: 0.3; }
 }
+
+/* ── Responsive ────────────────────────────────────────────── */
 
 @media (max-width: 1200px) {
   .hero-content {
