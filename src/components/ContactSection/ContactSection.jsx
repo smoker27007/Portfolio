@@ -1,120 +1,205 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Mail, Linkedin, Twitter, Github, Dribbble } from 'lucide-react';
+import './ContactSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ContactSection = () => {
   const sectionRef = useRef(null);
+  const titleRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     const ctx = gsap.context(() => {
-      gsap.from(".contact-char", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.03,
-        duration: 1,
-        ease: "power4.out",
+      // ════════════════════════════════════════════════════════════
+      // TITLE ANIMATION
+      // ════════════════════════════════════════════════════════════
+      
+      const titleText = titleRef.current?.querySelectorAll('.title-char');
+      if (titleText && titleText.length > 0) {
+        gsap.set(titleText, { opacity: 0, y: 60, rotateX: -90, scale: 0.8 });
+        gsap.to(titleText, {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          scale: 1,
+          stagger: 0.08,
+          duration: 1,
+          ease: 'back.out(1.5)',
+          delay: 0.2,
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          }
+        });
+      }
+
+      // Subtitle animation
+      gsap.set('.contact-subtitle', { opacity: 0, y: 40, filter: 'blur(10px)' });
+      gsap.to('.contact-subtitle', {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        duration: 0.9,
+        ease: 'power3.out',
+        delay: 0.5,
         scrollTrigger: {
           trigger: section,
-          start: "top 75%",
-          toggleActions: "play none none reverse",
-        },
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
       });
 
-      gsap.from(".contact-link", {
-        opacity: 0,
-        y: 20,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: "power3.out",
+      // Buttons animation
+      const buttons = section.querySelectorAll('.cta-button-dark');
+      buttons.forEach((btn, i) => {
+        gsap.set(btn, { opacity: 0, y: 40, scale: 0.8, rotateY: -90 });
+        gsap.to(btn, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          rotateY: 0,
+          duration: 0.7,
+          ease: 'back.out(1.3)',
+          delay: 0.7 + i * 0.15,
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          }
+        });
+
+        btn.addEventListener('mouseenter', () => {
+          gsap.to(btn, { scale: 1.08, y: -5, boxShadow: '0 20px 50px rgba(74, 158, 255, 0.3)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        });
+        btn.addEventListener('mouseleave', () => {
+          gsap.to(btn, { scale: 1, y: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        });
+      });
+
+      // Email animation
+      gsap.set('.contact-email', { opacity: 0, y: 30 });
+      gsap.to('.contact-email', {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        delay: 1,
         scrollTrigger: {
           trigger: section,
-          start: "top 60%",
-          toggleActions: "play none none reverse",
-        },
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      });
+
+      // Social links animation
+      const socialLinks = section.querySelectorAll('.social-link');
+      socialLinks.forEach((link, i) => {
+        gsap.set(link, { opacity: 0, y: 40, rotateZ: 45, scale: 0.6 });
+        gsap.to(link, {
+          opacity: 1,
+          y: 0,
+          rotateZ: 0,
+          scale: 1,
+          duration: 0.6,
+          ease: 'back.out(1.2)',
+          delay: 1.1 + i * 0.1,
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          }
+        });
+
+        link.addEventListener('mouseenter', () => {
+          gsap.to(link, { scale: 1.12, y: -5, boxShadow: '0 15px 40px rgba(74, 158, 255, 0.2)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        });
+        link.addEventListener('mouseleave', () => {
+          gsap.to(link, { scale: 1, y: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        });
+      });
+
+      // Copyright animation
+      gsap.set('.copyright-text', { opacity: 0, y: 20 });
+      gsap.to('.copyright-text', {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        delay: 1.4,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
       });
     }, section);
 
     return () => ctx.revert();
   }, []);
 
-  const splitText = (text) =>
-    text.split("").map((c, i) => (
-      <span
-        key={i}
-        className="contact-char inline-block"
-        style={{ willChange: "transform, opacity" }}
-      >
-        {c === " " ? "\u00A0" : c}
-      </span>
-    ));
-
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen flex flex-col items-center justify-center px-8 py-20"
-      style={{ background: "var(--bg-light)" }}
+      className="contact-section"
+      id="contact"
     >
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Heading */}
-        <h2 className="text-6xl md:text-7xl font-display font-bold mb-8 leading-tight">
-          {splitText("LET'S WORK")}
+      <div className="contact-content">
+        <h2 className="contact-title" ref={titleRef}>
+          {['L', 'E', 'T', "'", 'S'].map((char, i) => (
+            <span key={`l-${i}`} className="title-char">{char}</span>
+          ))}
+          {' '}
+          {['W', 'O', 'R', 'K'].map((char, i) => (
+            <span key={`w-${i}`} className="title-char">{char}</span>
+          ))}
           <br />
-          {splitText("TOGETHER")}
+          {['T', 'O', 'G', 'E', 'T', 'H', 'E', 'R'].map((char, i) => (
+            <span key={`t-${i}`} className="title-char">{char}</span>
+          ))}
         </h2>
 
-        <p
-          className="text-lg md:text-xl mb-12 leading-relaxed"
-          style={{ color: "var(--text-light-secondary)", maxWidth: "600px", margin: "0 auto 48px" }}
-        >
-          Whether you need a website redesign, brand strategy, or full digital
-          transformation, I'm here to help bring your vision to life.
+        <p className="contact-subtitle">
+          Whether you need a website redesign, brand strategy, or full digital transformation, I'm here to help bring your vision to life.
         </p>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-24">
-          <button className="cta-button-dark flex items-center gap-2">
-            START A PROJECT
-            <span>→</span>
-          </button>
-          <button className="cta-button-dark border-0 text-center justify-center">
-            SCHEDULE A CALL
-          </button>
+        <div className="contact-buttons">
+          <button className="cta-button-dark">START A PROJECT →</button>
+          <button className="cta-button-dark">SCHEDULE A CALL</button>
         </div>
 
-        <div className="space-y-6 mb-24">
-          <a href="mailto:hello@gowtham.dev" className="contact-link block text-lg">
+        <div className="contact-email-section">
+          <a href="mailto:hello@gowtham.dev" className="contact-email">
             hello@gowtham.dev
           </a>
-          <div className="flex items-center justify-center gap-8 text-sm">
-            <a href="#" className="contact-link">
-              LinkedIn
+
+          <div className="social-links">
+            <a href="#" className="social-link" title="LinkedIn">
+              <Linkedin size={18} />
+              <span>LinkedIn</span>
             </a>
-            <span style={{ color: "var(--border-light)" }}>•</span>
-            <a href="#" className="contact-link">
-              Twitter
+            <a href="#" className="social-link" title="Twitter">
+              <Twitter size={18} />
+              <span>Twitter</span>
             </a>
-            <span style={{ color: "var(--border-light)" }}>•</span>
-            <a href="#" className="contact-link">
-              GitHub
+            <a href="#" className="social-link" title="GitHub">
+              <Github size={18} />
+              <span>GitHub</span>
             </a>
-            <span style={{ color: "var(--border-light)" }}>•</span>
-            <a href="#" className="contact-link">
-              Dribbble
+            <a href="#" className="social-link" title="Dribbble">
+              <Dribbble size={18} />
+              <span>Dribbble</span>
             </a>
           </div>
         </div>
 
-        <div
-          className="pt-12 border-t"
-          style={{ borderColor: "var(--border-light)" }}
-        >
-          <p style={{ color: "var(--text-muted)", fontSize: "12px" }}>
-            © 2024 GOWTHAM C D. All rights reserved.
-          </p>
+        <div className="contact-footer">
+          <p className="copyright-text">© 2024 GOWTHAM C D. All rights reserved.</p>
         </div>
       </div>
     </section>

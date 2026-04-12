@@ -61,7 +61,6 @@ const Projects = () => {
   };
 
   useEffect(() => {
-    // Prevent scroll while locked
     const handleWheel = (e) => {
       if (scrollLockedRef.current) e.preventDefault();
     };
@@ -81,11 +80,8 @@ const Projects = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ════════════════════════════════════════════════════════════
-      // HEADER ANIMATIONS
-      // ════════════════════════════════════════════════════════════
       
-      lockScroll(); // Lock on initial load
+      lockScroll();
 
       const titleText = titleRef.current?.querySelectorAll('.title-char');
       if (titleText && titleText.length > 0) {
@@ -111,13 +107,9 @@ const Projects = () => {
         ease: 'power3.out',
         delay: 0.6,
         onComplete: () => {
-          unlockScroll(); // Unlock after header animations
+          unlockScroll();
         }
       });
-
-      // ════════════════════════════════════════════════════════════
-      // PROJECT SHOWCASE ANIMATIONS - ON SCROLL
-      // ════════════════════════════════════════════════════════════
 
       const showcases = document.querySelectorAll('.project-showcase');
 
@@ -129,7 +121,6 @@ const Projects = () => {
         const imageSection = showcase.querySelector('.project-image-section');
         gsap.set(imageSection, { opacity: 0, x: 120, skewX: -10, scale: 0.8 });
 
-        // ScrollTrigger for each project
         ScrollTrigger.create({
           trigger: showcase,
           start: 'top 80%',
@@ -142,7 +133,6 @@ const Projects = () => {
               }
             });
 
-            // Main showcase
             projectTl.to(showcase, {
               opacity: 1,
               y: 0,
@@ -151,7 +141,6 @@ const Projects = () => {
               ease: 'back.out(1.2)'
             }, 0);
 
-            // Details
             projectTl.to(detailsSection, {
               opacity: 1,
               x: 0,
@@ -160,7 +149,6 @@ const Projects = () => {
               ease: 'power3.out'
             }, 0.1);
 
-            // Image
             projectTl.to(imageSection, {
               opacity: 1,
               x: 0,
@@ -170,7 +158,6 @@ const Projects = () => {
               ease: 'power3.out'
             }, 0.15);
 
-            // Project number
             const projectNumber = showcase.querySelector('.project-number');
             if (projectNumber) {
               gsap.set(projectNumber, { opacity: 0, y: 80, rotateZ: -45, scale: 0.5 });
@@ -184,7 +171,6 @@ const Projects = () => {
               }, 0.05);
             }
 
-            // Title
             const projectTitle = showcase.querySelector('.project-showcase-title');
             if (projectTitle) {
               gsap.set(projectTitle, { opacity: 0, y: 50 });
@@ -196,7 +182,6 @@ const Projects = () => {
               }, 0.12);
             }
 
-            // Metadata
             const metaItems = showcase.querySelectorAll('.meta-item');
             metaItems.forEach((item, i) => {
               gsap.set(item, { opacity: 0, y: 30, rotateX: -90, scale: 0.8 });
@@ -217,7 +202,6 @@ const Projects = () => {
               });
             });
 
-            // Description
             const description = showcase.querySelector('.project-showcase-desc');
             if (description) {
               gsap.set(description, { opacity: 0, y: 20 });
@@ -229,7 +213,6 @@ const Projects = () => {
               }, 0.3);
             }
 
-            // Metrics
             const metricBoxes = showcase.querySelectorAll('.metric-box');
             metricBoxes.forEach((box, i) => {
               gsap.set(box, { opacity: 0, y: 60, scale: 0.6, rotateZ: -15 });
@@ -250,7 +233,6 @@ const Projects = () => {
               });
             });
 
-            // Tech tags
             const techTags = showcase.querySelectorAll('.tech-tag');
             techTags.forEach((tag, i) => {
               gsap.set(tag, { opacity: 0, y: 40, rotateZ: 20, scale: 0.7 });
@@ -271,7 +253,6 @@ const Projects = () => {
               });
             });
 
-            // Buttons
             const ctaButtons = showcase.querySelectorAll('.project-cta a');
             ctaButtons.forEach((btn, i) => {
               gsap.set(btn, { opacity: 0, y: 40, scale: 0.8, rotateY: -90 });
@@ -293,7 +274,6 @@ const Projects = () => {
               });
             });
 
-            // Image
             const projectImage = showcase.querySelector('.project-showcase-image');
             const imageWrapper = showcase.querySelector('.project-image-wrapper');
             
@@ -307,7 +287,6 @@ const Projects = () => {
                 ease: 'back.out(1.2)'
               }, 0.1);
 
-              // Parallax
               gsap.to(projectImage, {
                 y: -60,
                 duration: 1,
@@ -344,7 +323,6 @@ const Projects = () => {
               });
             }
 
-            // Image glow
             const imageGlow = showcase.querySelector('.image-glow');
             if (imageGlow) {
               gsap.to(imageGlow, { opacity: 0.8, scale: 1.1, duration: 3, ease: 'sine.inOut', repeat: -1, yoyo: true });
