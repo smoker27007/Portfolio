@@ -3,8 +3,7 @@ import gsap from "gsap";
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./Pages/Hero/Hero";
 import AboutSection from "./components/AboutSection/AboutSection";
-import HorizontalScroll from "./components/HorizontalScroll/HorizontalScroll";
-import ProjectSection from "./components/ProjectSection/ProjectSection";
+import Projects from "./Pages/Projects/Projects";
 import ContactSection from "./components/ContactSection/ContactSection";
 
 const PROJECTS = [
@@ -134,11 +133,7 @@ useEffect(() => {
 
       <AboutSection />
 
-      <HorizontalScroll onProgressUpdate={handleProgress}>
-        {PROJECTS.map((project) => (
-          <ProjectSection key={project.number} {...project} />
-        ))}
-      </HorizontalScroll>
+      <Projects />
 
       <ContactSection />
     </main>
