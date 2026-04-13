@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Mail, Linkedin, Twitter, Github, Dribbble } from 'lucide-react';
+import { Code, ExternalLink } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './Contact.css';
@@ -12,10 +12,6 @@ const Contact = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ════════════════════════════════════════════════════════════
-      // TITLE ANIMATION
-      // ════════════════════════════════════════════════════════════
-      
       const titleText = titleRef.current?.querySelectorAll('.title-char');
       if (titleText && titleText.length > 0) {
         gsap.set(titleText, { opacity: 0, y: 60, rotateX: -90, scale: 0.8 });
@@ -27,11 +23,10 @@ const Contact = () => {
           stagger: 0.08,
           duration: 1,
           ease: 'back.out(1.5)',
-          delay: 0.3
+          delay: 0.3,
         });
       }
 
-      // Subtitle animation
       gsap.set('.contact-subtitle', { opacity: 0, y: 40, filter: 'blur(10px)' });
       gsap.to('.contact-subtitle', {
         opacity: 1,
@@ -39,14 +34,10 @@ const Contact = () => {
         filter: 'blur(0px)',
         duration: 0.9,
         ease: 'power3.out',
-        delay: 0.6
+        delay: 0.6,
       });
 
-      // ════════════════════════════════════════════════════════════
-      // BUTTONS ANIMATION
-      // ════════════════════════════════════════════════════════════
-
-      const buttons = document.querySelectorAll('.cta-btn');
+      const buttons = contactRef.current?.querySelectorAll('.cta-btn') ?? [];
       buttons.forEach((btn, i) => {
         gsap.set(btn, { opacity: 0, y: 40, scale: 0.8, rotateY: -90 });
         gsap.to(btn, {
@@ -56,59 +47,37 @@ const Contact = () => {
           rotateY: 0,
           duration: 0.7,
           ease: 'back.out(1.3)',
-          delay: 0.8 + i * 0.15
+          delay: 0.8 + i * 0.15,
         });
 
         btn.addEventListener('mouseenter', () => {
-          gsap.to(btn, { scale: 1.08, y: -5, boxShadow: '0 20px 50px rgba(26, 35, 50, 0.15)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+          gsap.to(btn, {
+            scale: 1.05,
+            y: -2,
+            duration: 0.3,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          });
         });
+
         btn.addEventListener('mouseleave', () => {
-          gsap.to(btn, { scale: 1, y: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+          gsap.to(btn, {
+            scale: 1,
+            y: 0,
+            duration: 0.25,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          });
         });
       });
 
-      // ════════════════════════════════════════════════════════════
-      // EMAIL AND SOCIAL ANIMATION
-      // ════════════════════════════════════════════════════════════
-
-      gsap.set('.contact-email', { opacity: 0, y: 30 });
-      gsap.to('.contact-email', {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: 'power3.out',
-        delay: 1.1
-      });
-
-      const socialLinks = document.querySelectorAll('.social-link');
-      socialLinks.forEach((link, i) => {
-        gsap.set(link, { opacity: 0, y: 40, rotateZ: 45, scale: 0.6 });
-        gsap.to(link, {
-          opacity: 1,
-          y: 0,
-          rotateZ: 0,
-          scale: 1,
-          duration: 0.6,
-          ease: 'back.out(1.2)',
-          delay: 1.2 + i * 0.1
-        });
-
-        link.addEventListener('mouseenter', () => {
-          gsap.to(link, { scale: 1.15, y: -8, rotateZ: 5, boxShadow: '0 15px 40px rgba(26, 35, 50, 0.15)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-        });
-        link.addEventListener('mouseleave', () => {
-          gsap.to(link, { scale: 1, y: 0, rotateZ: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-        });
-      });
-
-      // Copyright animation
       gsap.set('.copyright-text', { opacity: 0, y: 20 });
       gsap.to('.copyright-text', {
         opacity: 1,
         y: 0,
         duration: 0.6,
         ease: 'power3.out',
-        delay: 1.5
+        delay: 1.5,
       });
     }, contactRef);
 
@@ -150,20 +119,16 @@ const Contact = () => {
 
           <div className="social-links">
             <a href="#" className="social-link" title="LinkedIn">
-              <Linkedin size={20} />
+              <ExternalLink size={20} />
               <span>LinkedIn</span>
             </a>
             <a href="#" className="social-link" title="Twitter">
-              <Twitter size={20} />
+              <ExternalLink size={20} />
               <span>Twitter</span>
             </a>
             <a href="#" className="social-link" title="GitHub">
-              <Github size={20} />
+              <Code size={20} />
               <span>GitHub</span>
-            </a>
-            <a href="#" className="social-link" title="Dribbble">
-              <Dribbble size={20} />
-              <span>Dribbble</span>
             </a>
           </div>
         </div>

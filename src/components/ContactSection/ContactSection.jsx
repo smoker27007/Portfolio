@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Mail, Linkedin, Twitter, Github, Dribbble } from 'lucide-react';
+import { Mail, Code, ExternalLink } from 'lucide-react';
 import './ContactSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -180,20 +180,16 @@ const ContactSection = () => {
 
           <div className="social-links">
             <a href="#" className="social-link" title="LinkedIn">
-              <Linkedin size={18} />
+              <ExternalLink size={18} />
               <span>LinkedIn</span>
             </a>
             <a href="#" className="social-link" title="Twitter">
-              <Twitter size={18} />
+              <ExternalLink size={18} />
               <span>Twitter</span>
             </a>
             <a href="#" className="social-link" title="GitHub">
-              <Github size={18} />
+              <Code size={18} />
               <span>GitHub</span>
-            </a>
-            <a href="#" className="social-link" title="Dribbble">
-              <Dribbble size={18} />
-              <span>Dribbble</span>
             </a>
           </div>
         </div>

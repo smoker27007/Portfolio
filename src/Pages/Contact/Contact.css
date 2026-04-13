@@ -310,20 +310,3 @@
     font-size: 12px;
   }
 }
-  justify-content: center;
-  margin-top: 10px;
-}
-
-@media (max-width: 1024px) {
-  .contact-container {
-    grid-template-columns: 1fr;
-    padding: 40px;
-    gap: 40px;
-  }
-}
-
-@media (max-width: 640px) {
-  .form-group.grid-2 {
-    grid-template-columns: 1fr;
-  }
-}
