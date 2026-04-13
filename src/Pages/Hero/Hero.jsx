@@ -40,108 +40,64 @@ const Hero = () => {
         .to(".hero-divider-line", { scaleX: 1, duration: 1.8, ease: "power4.inOut" }, 1)
         .to(".hero-role-tag", { opacity: 1, y: 0, stagger: 0.12, duration: 1.2, ease: "back.out(1.8)" }, 1.2)
         .to(".hero-sub", { opacity: 1, y: 0, stagger: 0.15, duration: 1.2, ease: "power3.out" }, 1.4);
-      
-      //--- Cursor circular reveal effect - Enhanced Bubble animation ------
-      const spotlightRadius = 100;
-      let mouseX = 0, mouseY = 0;
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const canUseHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
       let animationFrameId = null;
-      
+      let needsMaskUpdate = false;
+      let mouseX = section.clientWidth / 2;
+      let mouseY = section.clientHeight / 2;
+      const spotlightRadius = 130;
+
+      const renderMask = () => {
+        animationFrameId = null;
+        if (!bgRef.current || !needsMaskUpdate) return;
+
+        const maskGradient = `radial-gradient(circle ${spotlightRadius}px at ${mouseX}px ${mouseY}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.2) 85%, rgba(0,0,0,0) 100%)`;
+        bgRef.current.style.webkitMaskImage = maskGradient;
+        bgRef.current.style.maskImage = maskGradient;
+        needsMaskUpdate = false;
+      };
+
+      const scheduleMaskUpdate = () => {
+        needsMaskUpdate = true;
+        if (!animationFrameId) {
+          animationFrameId = requestAnimationFrame(renderMask);
+        }
+      };
+
       const handleMouseMove = (e) => {
-      if (!bgRef.current || !section) return;
-        
         const rect = section.getBoundingClientRect();
         mouseX = e.clientX - rect.left;
         mouseY = e.clientY - rect.top;
+        scheduleMaskUpdate();
       };
-      
-      const animateBubble = () => {
-        if (!bgRef.current) return;
-        
-        const time = Date.now() * 0.001;
-        
-        // Create a more dynamic pulsing bubble with multiple wave effects
-        const pulse1 = Math.sin(time * 2) * 15;
-        const pulse2 = Math.sin(time * 1.5 + Math.PI / 3) * 10;
-        const pulse3 = Math.sin(time * 0.8 + Math.PI / 2) * 8;
-        
-        const dynamicRadius = spotlightRadius + pulse1 + pulse2 + pulse3;
-        
-        // Main bubble mask with smooth gradient
-        const maskGradient = `radial-gradient(
-          circle ${dynamicRadius}px at ${mouseX}px ${mouseY}px,
-          rgba(0,0,0,1) 0%,
-          rgba(0,0,0,0.95) 65%,
-          rgba(0,0,0,0.7) 80%,
-          rgba(0,0,0,0.3) 90%,
-          rgba(0,0,0,0) 100%
-        )`;
-        
-        bgRef.current.style.webkitMaskImage = maskGradient;
-        bgRef.current.style.maskImage = maskGradient;
-        
-        // Multi-layer glow effect with pulsing intensity
-        const glowIntensity = 0.5 + Math.sin(time * 2.5) * 0.3;
-        const glowSize = dynamicRadius + 40;
-        
-        bgRef.current.style.boxShadow = `
-          inset 0 0 ${100 * glowIntensity}px rgba(0, 212, 170, ${0.6 * glowIntensity}),
-          inset 0 0 ${150 * glowIntensity}px rgba(74, 158, 255, ${0.3 * glowIntensity}),
-          inset 0 0 ${200 * glowIntensity}px rgba(184, 77, 255, ${0.1 * glowIntensity})
-        `;
-        
-        animationFrameId = requestAnimationFrame(animateBubble);
-      };
-      
+
       const handleMouseLeave = () => {
         if (!bgRef.current) return;
-        
-        // Cancel animation frame
-        if (animationFrameId) {
-          cancelAnimationFrame(animationFrameId);
-        }
-        
-        // Smooth fade out animation
-        gsap.to(bgRef.current, {
-          duration: 1.2,
-          ease: "power2.out",
-          onUpdate: function() {
-            const progress = this.progress();
-            const currentRadius = spotlightRadius * (1 - progress);
-            const hideMask = `radial-gradient(
-              circle ${currentRadius}px at 50% 50%,
-              rgba(0,0,0,1) 0%,
-              rgba(0,0,0,0) 70%
-            )`;
-            bgRef.current.style.webkitMaskImage = hideMask;
-            bgRef.current.style.maskImage = hideMask;
-            bgRef.current.style.boxShadow = `inset 0 0 ${200 * (1 - progress)}px rgba(0, 212, 170, ${0.6 * (1 - progress)})`;
-          },
-          onComplete: () => {
-            const fullHideMask = `radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%)`;
-            bgRef.current.style.webkitMaskImage = fullHideMask;
-            bgRef.current.style.maskImage = fullHideMask;
-            bgRef.current.style.boxShadow = "none";
-          }
-        });
+        const fullHideMask = "radial-gradient(circle 0px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 50%)";
+        bgRef.current.style.webkitMaskImage = fullHideMask;
+        bgRef.current.style.maskImage = fullHideMask;
       };
-      
-      section.addEventListener("mousemove", handleMouseMove);
-      section.addEventListener("mouseleave", handleMouseLeave);
-      section.addEventListener("mouseenter", () => {
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        animateBubble();
-      });
+
+      if (!prefersReducedMotion && canUseHover) {
+        section.addEventListener("mousemove", handleMouseMove);
+        section.addEventListener("mouseleave", handleMouseLeave);
+      }
 
       // ── Character hover ───────────────────────────────────────────
       const chars = section.querySelectorAll(".hero-char");
-      chars.forEach((char) => {
-        char.addEventListener("mouseenter", () =>
-          gsap.to(char, { color: "var(--accent)", duration: 0.2, overwrite: "auto" })
-        );
-        char.addEventListener("mouseleave", () =>
-          gsap.to(char, { clearProps: "color", duration: 0.4, overwrite: "auto" })
-        );
-      });
+      const charListeners = [];
+      if (canUseHover) {
+        chars.forEach((char) => {
+          const onEnter = () => gsap.to(char, { color: "var(--accent)", duration: 0.2, overwrite: "auto" });
+          const onLeave = () => gsap.to(char, { clearProps: "color", duration: 0.4, overwrite: "auto" });
+          char.addEventListener("mouseenter", onEnter);
+          char.addEventListener("mouseleave", onLeave);
+          charListeners.push({ char, onEnter, onLeave });
+        });
+      }
 
       // ── Scroll dismantling: glass-shard style ─────────────────────
       const scrollTL = gsap.timeline({
@@ -250,7 +206,15 @@ const Hero = () => {
       });
 
       return () => {
-        if (animationFrameId) {
+        if (!prefersReducedMotion && canUseHover) {
+          section.removeEventListener("mousemove", handleMouseMove);
+          section.removeEventListener("mouseleave", handleMouseLeave);
+          charListeners.forEach(({ char, onEnter, onLeave }) => {
+            char.removeEventListener("mouseenter", onEnter);
+            char.removeEventListener("mouseleave", onLeave);
+          });
+        }
+        if (animationFrameId !== null) {
           cancelAnimationFrame(animationFrameId);
         }
       };

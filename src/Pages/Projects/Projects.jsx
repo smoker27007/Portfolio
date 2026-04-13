@@ -48,41 +48,9 @@ const AnimatedMetric = ({ label, value }) => {
 const Projects = () => {
   const projectsRef = useRef(null);
   const titleRef = useRef(null);
-  const scrollLockedRef = useRef(false);
-
-  const lockScroll = () => {
-    scrollLockedRef.current = true;
-    document.body.style.overflow = 'hidden';
-  };
-
-  const unlockScroll = () => {
-    scrollLockedRef.current = false;
-    document.body.style.overflow = 'auto';
-  };
-
-  useEffect(() => {
-    const handleWheel = (e) => {
-      if (scrollLockedRef.current) e.preventDefault();
-    };
-
-    const handleTouchMove = (e) => {
-      if (scrollLockedRef.current) e.preventDefault();
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      
-      lockScroll();
-
       const titleText = titleRef.current?.querySelectorAll('.title-char');
       if (titleText && titleText.length > 0) {
         gsap.set(titleText, { opacity: 0, y: 60, rotateX: -90, scale: 0.8 });
@@ -99,19 +67,16 @@ const Projects = () => {
       }
 
       gsap.set('.projects-subtitle', { opacity: 0, y: 40, filter: 'blur(10px)' });
-      const subtitleAnim = gsap.to('.projects-subtitle', {
+      gsap.to('.projects-subtitle', {
         opacity: 1,
         y: 0,
         filter: 'blur(0px)',
         duration: 0.9,
         ease: 'power3.out',
-        delay: 0.6,
-        onComplete: () => {
-          unlockScroll();
-        }
+        delay: 0.6
       });
 
-      const showcases = document.querySelectorAll('.project-showcase');
+      const showcases = projectsRef.current?.querySelectorAll('.project-showcase') ?? [];
 
       showcases.forEach((showcase, index) => {
         // Set animation initial states
@@ -125,13 +90,7 @@ const Projects = () => {
           trigger: showcase,
           start: 'top 80%',
           onEnter: () => {
-            lockScroll();
-
-            const projectTl = gsap.timeline({
-              onComplete: () => {
-                unlockScroll();
-              }
-            });
+            const projectTl = gsap.timeline();
 
             projectTl.to(showcase, {
               opacity: 1,
@@ -193,13 +152,6 @@ const Projects = () => {
                 duration: 0.6,
                 ease: 'back.out(1.2)'
               }, 0.18 + i * 0.08);
-
-              item.addEventListener('mouseenter', () => {
-                gsap.to(item, { scale: 1.08, y: -5, boxShadow: '0 15px 40px rgba(74, 158, 255, 0.2)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-              });
-              item.addEventListener('mouseleave', () => {
-                gsap.to(item, { scale: 1, y: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-              });
             });
 
             const description = showcase.querySelector('.project-showcase-desc');
@@ -224,13 +176,6 @@ const Projects = () => {
                 duration: 0.7,
                 ease: 'back.out(1.4)'
               }, 0.35 + i * 0.12);
-
-              box.addEventListener('mouseenter', () => {
-                gsap.to(box, { scale: 1.1, y: -10, boxShadow: '0 20px 50px rgba(74, 158, 255, 0.3)', duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-              });
-              box.addEventListener('mouseleave', () => {
-                gsap.to(box, { scale: 1, y: 0, boxShadow: 'none', duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-              });
             });
 
             const techTags = showcase.querySelectorAll('.tech-tag');
@@ -244,13 +189,6 @@ const Projects = () => {
                 duration: 0.6,
                 ease: 'back.out(1.3)'
               }, 0.5 + i * 0.08);
-
-              tag.addEventListener('mouseenter', () => {
-                gsap.to(tag, { y: -12, rotateZ: 5, scale: 1.15, boxShadow: '0 15px 40px rgba(74, 158, 255, 0.4)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-              });
-              tag.addEventListener('mouseleave', () => {
-                gsap.to(tag, { y: 0, rotateZ: 0, scale: 1, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-              });
             });
 
             const ctaButtons = showcase.querySelectorAll('.project-cta a');
@@ -264,14 +202,6 @@ const Projects = () => {
                 duration: 0.7,
                 ease: 'back.out(1.3)'
               }, 0.65 + i * 0.12);
-
-              btn.addEventListener('mouseenter', () => {
-                gsap.to(btn, { scale: 1.1, y: -5, boxShadow: '0 20px 50px rgba(74, 158, 255, 0.5)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-                gsap.to(btn, { textShadow: '0 0 20px rgba(74, 158, 255, 0.8), 0 0 40px rgba(74, 158, 255, 0.4)', duration: 0.3 });
-              });
-              btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, { scale: 1, y: 0, boxShadow: 'none', textShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-              });
             });
 
             const projectImage = showcase.querySelector('.project-showcase-image');
@@ -309,17 +239,6 @@ const Projects = () => {
                   end: 'bottom center',
                   scrub: 1
                 }
-              });
-
-              imageWrapper.addEventListener('mousemove', (e) => {
-                const rect = imageWrapper.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                gsap.to(imageWrapper, { rotateX: y * 10, rotateY: x * 10, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
-              });
-
-              imageWrapper.addEventListener('mouseleave', () => {
-                gsap.to(imageWrapper, { rotateX: 0, rotateY: 0, rotateZ: 0, duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
               });
             }
 
@@ -461,7 +380,7 @@ const Projects = () => {
 
             <div className="project-image-section">
               <div className="project-image-wrapper">
-                <img src={project.image} alt={project.title} className="project-showcase-image" />
+                <img src={project.image} alt={project.title} className="project-showcase-image" loading="lazy" decoding="async" />
                 <div className="image-glow"></div>
               </div>
             </div>

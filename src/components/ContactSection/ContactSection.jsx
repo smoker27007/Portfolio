@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Mail, Code, ExternalLink } from 'lucide-react';
+import { Code, ExternalLink } from 'lucide-react';
 import './ContactSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -73,13 +73,6 @@ const ContactSection = () => {
             toggleActions: 'play none none none'
           }
         });
-
-        btn.addEventListener('mouseenter', () => {
-          gsap.to(btn, { scale: 1.08, y: -5, boxShadow: '0 20px 50px rgba(74, 158, 255, 0.3)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-        });
-        btn.addEventListener('mouseleave', () => {
-          gsap.to(btn, { scale: 1, y: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-        });
       });
 
       // Email animation
@@ -114,13 +107,6 @@ const ContactSection = () => {
             start: 'top 80%',
             toggleActions: 'play none none none'
           }
-        });
-
-        link.addEventListener('mouseenter', () => {
-          gsap.to(link, { scale: 1.12, y: -5, boxShadow: '0 15px 40px rgba(74, 158, 255, 0.2)', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-        });
-        link.addEventListener('mouseleave', () => {
-          gsap.to(link, { scale: 1, y: 0, boxShadow: 'none', duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
         });
       });
 
