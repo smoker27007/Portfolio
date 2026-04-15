@@ -36,7 +36,21 @@ jobs:
         run: npm run build
       
       - name: Verify dist folder
-        run: ls -la dist/ && cat dist/index.html
+        run: |
+          echo "Dist folder contents:"
+          ls -la dist/
+          echo "=== Checking for source files ==="
+          if find dist -name "*.jsx" -o -name "*.tsx" -o -name "*.ts" | grep -v node_modules; then
+            echo "❌ ERROR: Source files found in dist!"
+            echo "Build is broken. Check vite.config.js"
+            exit 1
+          else
+            echo "✅ No source files in dist - Build is correct!"
+          fi
+          echo "=== Built index.html preview ==="
+          head -20 dist/index.html
+          echo ""
+          echo "✅ Build verification passed!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

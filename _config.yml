@@ -1,0 +1,10 @@
+markdown: kramdown
+exclude:
+  - node_modules/
+  - src/
+  - public/
+  - .github/
+  - .vscode/
+  - "*.md"
+include:
+  - .nojekyll
