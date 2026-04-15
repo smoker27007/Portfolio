@@ -15,6 +15,7 @@ const DNACanvas = () => {
   const progressRef = useRef(0);
   const rafRef = useRef(0);
   const inViewRef = useRef(true);
+  const resizeTimerRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -37,10 +38,9 @@ const DNACanvas = () => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
-    let resizeTimer;
     const onResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(resize, 200);
+      clearTimeout(resizeTimerRef.current);
+      resizeTimerRef.current = setTimeout(resize, 200);
     };
     window.addEventListener("resize", onResize);
 
@@ -128,6 +128,8 @@ const DNACanvas = () => {
     const draw = () => {
         if (!cw || !ch) return;
         ctx.clearRect(0, 0, cw, ch);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
         
         const prog = progressRef.current; 
         const time = Date.now() * 0.0005;
@@ -228,6 +230,8 @@ const DNACanvas = () => {
                 ctx.beginPath(); ctx.moveTo(p.x1, p.y1); ctx.lineTo(p.x2, p.y2); ctx.stroke();
             }
         }
+        
+        ctx.globalAlpha = 1;
     };
 
     const section = canvas.closest(".about-section");
@@ -259,7 +263,7 @@ const DNACanvas = () => {
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      clearTimeout(resizeTimer);
+      clearTimeout(resizeTimerRef.current);
       window.removeEventListener("resize", onResize);
       if (st) st.kill();
     };
