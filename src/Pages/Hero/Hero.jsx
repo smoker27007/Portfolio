@@ -232,6 +232,7 @@ const Hero = () => {
 
   return (
     <section ref={sectionRef} className="hero-section" id="home">
+      <div className="hero-grid-base"></div>
       <div 
         ref={bgRef} 
         className="hero-bg"
@@ -275,9 +276,9 @@ const Hero = () => {
 
             <div className="hero-bottom">
               <p className="hero-sub hero-description">
-                Crafting digital experiences that merge functionality with
-                high-end aesthetics. Specialized in modern web architectures
-                &amp; immersive animations.
+                Crafting robust digital experiences that merge strong engineering with 
+                clean, accessible design. Specialized in front-end development &amp; 
+                modern web architecture.
               </p>
               <div className="hero-sub hero-scroll-cta">
                 <span className="hero-scroll-text">Scroll</span>

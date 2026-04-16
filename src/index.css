@@ -5,25 +5,25 @@
 @tailwind utilities;
 
 :root {
-  /* ── Premium Modern Palette ── */
-  --bg-primary: #0C1821;       /* Rich deep navy (hero/dark sections) */
-  --bg-secondary: #132330;     /* Slightly lighter navy */
-  --bg-light: #F5F0EB;         /* Warm cream (light sections) */
-  --bg-light-alt: #EDE7E0;     /* Slightly darker cream */
-  --bg-card: #FDFAF7;          /* Card background */
+  /* ── White and Sandal Light Theme ── */
+  --bg-primary: #FCFCFA;       /* Pure Warm White */
+  --bg-secondary: #F4EFE6;     /* Sandal / Light Beige */
+  --bg-light: #EAE4D9;         /* Darker Sandal */
+  --bg-light-alt: #DFD9CD;     /* Muted Sandal */
+  --bg-card: #FFFFFF;          /* Pure white card */
 
-  --text-primary: #F2EDE8;     /* Warm white for dark sections */
-  --text-dark: #1A2332;        /* Deep navy text for light sections */
-  --text-secondary: #7A8B9A;   /* Muted text */
-  --text-muted: #4A5B6E;       /* Very muted */
-  --text-light-secondary: #6B5E52; /* Muted text on light bg */
+  --text-primary: #2B2522;     /* Deep brown/charcoal */
+  --text-dark: #1A1613;        /* Almost black brown */
+  --text-secondary: #786B63;   /* Muted brown */
+  --text-muted: #A1958C;       /* Very muted brown */
+  --text-light-secondary: #6E6259; /* Dark muted text */
 
-  --accent: #4A9EFF;           /* Blue accent */
-  --accent-warm: #E8724A;      /* Warm coral accent */
-  --accent-gold: #C9A96E;      /* Elegant gold */
+  --accent: #B08257;           /* Deep Sandalwood */
+  --accent-warm: #C97A53;      /* Terracotta/Clay */
+  --accent-gold: #C39460;      /* Sandal Gold */
 
-  --border: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(26, 35, 50, 0.1);
+  --border: rgba(43, 37, 34, 0.08); /* Dark subtle border for light bg */
+  --border-light: rgba(43, 37, 34, 0.12); 
 
   /* Fonts */
   --font-inter: 'Inter', system-ui, -apple-system, sans-serif;

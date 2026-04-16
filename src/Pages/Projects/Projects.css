@@ -85,8 +85,8 @@
     content: '';
     position: absolute;
     inset: 0;
-      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(176, 130, 87, 0.05) 0%, transparent 50%);
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -94,15 +94,15 @@
   }
 
   .project-showcase:nth-child(1) {
-    background: linear-gradient(135deg, rgba(74, 158, 255, 0.02) 0%, rgba(15, 23, 42, 0) 100%);
+    background: linear-gradient(135deg, rgba(201, 122, 83, 0.04) 0%, rgba(252, 252, 250, 0) 100%);
   }
 
   .project-showcase:nth-child(2) {
-    background: linear-gradient(135deg, rgba(0, 212, 170, 0.02) 0%, rgba(15, 23, 42, 0) 100%);
+    background: linear-gradient(135deg, rgba(176, 130, 87, 0.04) 0%, rgba(252, 252, 250, 0) 100%);
   }
 
   .project-showcase:nth-child(3) {
-    background: linear-gradient(135deg, rgba(184, 77, 255, 0.02) 0%, rgba(15, 23, 42, 0) 100%);
+    background: linear-gradient(135deg, rgba(195, 148, 96, 0.04) 0%, rgba(252, 252, 250, 0) 100%);
   }
 
   .project-details-section {
@@ -153,7 +153,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     padding-bottom: 20px;
-    border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+    border-bottom: 2px solid rgba(176, 130, 87, 0.2);
     visibility: visible;
   }
 
@@ -191,9 +191,9 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   padding: 28px;
-  background: rgba(99, 102, 241, 0.15);
+  background: rgba(176, 130, 87, 0.08);
   border-radius: 14px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(176, 130, 87, 0.15);
   backdrop-filter: blur(10px);
   will-change: background;
   transition: all 0.5s ease;
@@ -211,17 +211,17 @@
   transition: all 0.3s ease;
   visibility: visible;
   opacity: 1;
-  background: rgba(74, 158, 255, 0.06);
-  border: 1px solid rgba(74, 158, 255, 0.15);
+  background: rgba(201, 122, 83, 0.06);
+  border: 1px solid rgba(201, 122, 83, 0.15);
   backface-visibility: hidden;
   cursor: pointer;
 }
 
 .metric-box:hover {
-  background: rgba(74, 158, 255, 0.12);
+  background: rgba(201, 122, 83, 0.12);
   transform: translateY(-8px) scale(1.1);
   border-color: var(--accent);
-  box-shadow: 0 20px 5px rgba(74, 158, 255, 0.3);
+  box-shadow: 0 20px 15px rgba(176, 130, 87, 0.1);
 }
 
 .metric-label {
@@ -258,9 +258,9 @@
   font-weight: 700;
   padding: 8px 16px;
   border-radius: 24px;
-  background: rgba(99, 102, 241, 0.25);
+  background: rgba(176, 130, 87, 0.15);
   color: var(--accent);
-  border: 1.5px solid rgba(99, 102, 241, 0.25);
+  border: 1.5px solid rgba(176, 130, 87, 0.2);
   transition: all 0.3s ease;
   will-change: transform;
   cursor: pointer;
@@ -269,10 +269,10 @@
 }
 
 .tech-tag:hover {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(176, 130, 87, 0.25);
   border-color: var(--accent);
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8px 20px rgba(176, 130, 87, 0.15);
 }
 
 .project-cta {
@@ -336,12 +336,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  border: 1px solid rgba(176, 130, 87, 0.3) !important;
   color: var(--accent);
   transition: all 0.3s ease;
   cursor: pointer;
   flex-shrink: 0;
-  background: rgba(99, 102, 241, 0.08) !important;
+  background: rgba(176, 130, 87, 0.1) !important;
   will-change: transform;
   position: relative;
   visibility: visible;
@@ -349,10 +349,10 @@
 }
 
   .btn-github:hover {
-    background: rgba(99, 102, 241, 0.15) !important;
+    background: rgba(176, 130, 87, 0.2) !important;
     transform: translateY(-4px) scale(1.12);
     border-color: var(--accent) !important;
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 15px 40px rgba(176, 130, 87, 0.2);
   }
 
   .project-image-section {
@@ -397,14 +397,14 @@
 
 .project-showcase:hover .project-showcase-image {
   transform: scale(1.03);
-  box-shadow: 0 40px 80px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 40px 80px rgba(176, 130, 87, 0.15);
 }
 
 .image-glow {
   position: absolute;
   inset: -30px;
   background: radial-gradient(circle,
-      rgba(99, 102, 241, 0.2) 0%,
+      rgba(176, 130, 87, 0.1) 0%,
       transparent 70%);
   border-radius: 20px;
   filter: blur(40px);
@@ -464,7 +464,7 @@
   grid-template-columns: 1fr;
   gap: 20px;
   width: 100%;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  border-bottom: 1px solid rgba(176, 130, 87, 0.2);
   padding-bottom: 24px;
 }
 

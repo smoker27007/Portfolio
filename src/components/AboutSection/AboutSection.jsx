@@ -57,7 +57,7 @@ const DNACanvas = () => {
       gc.arc(h, h, h - 2, 0, Math.PI * 2);
       const gr = gc.createRadialGradient(h * 0.8, h * 0.8, 0, h, h, h);
       
-      gr.addColorStop(0, `rgba(255,255,255,1)`);
+      gr.addColorStop(0, `rgba(43,37,34,0.8)`);
       gr.addColorStop(0.2, `rgba(${r},${g},${b},0.8)`);
       gr.addColorStop(0.6, `rgba(${r},${g},${b},0.2)`);
       gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
@@ -67,11 +67,11 @@ const DNACanvas = () => {
       return c;
     };
 
-    const sprBlueLarge = makeGlow(74, 158, 255, true);
-    const sprBlueSmall = makeGlow(74, 158, 255, false);
-    const sprGoldLarge = makeGlow(201, 169, 110, true);
-    const sprGoldSmall = makeGlow(201, 169, 110, false);
-    const sprWhiteSmall = makeGlow(255, 255, 255, false);
+    const sprBlueLarge = makeGlow(176, 130, 87, true);   // Sandalwood Gold
+    const sprBlueSmall = makeGlow(176, 130, 87, false);
+    const sprGoldLarge = makeGlow(201, 122, 83, true);   // Terracotta
+    const sprGoldSmall = makeGlow(201, 122, 83, false);
+    const sprWhiteSmall = makeGlow(120, 107, 99, false); // Muted brown
 
     // ── Build 3D Geometry dynamically based on section height ──
     const renderables = [];
@@ -115,7 +115,7 @@ const DNACanvas = () => {
             
             // The rigid connecting rung
             renderables.push({
-                type: 'line', x1: px1, y1: y, z1: pz1, x2: px2, y2: y, z2: pz2, colorCore: "rgba(255,255,255,", colorGlow: "rgba(74,158,255,"
+                type: 'line', x1: px1, y1: y, z1: pz1, x2: px2, y2: y, z2: pz2, colorCore: "rgba(43,37,34,", colorGlow: "rgba(176,130,87,"
             });
             
             // Internal static base-pairs sitting securely on the rung
@@ -212,6 +212,29 @@ const DNACanvas = () => {
             }
         }
 
+        // ── Scroll Tracking Dots ──
+        // They literally travel down the DNA strands synchronously with the user's scroll progress!
+        const trackY = startY + (prog * totalHeight);
+        const trackAngle = ((trackY - startY) / stepSize) * 0.035;
+        
+        // Strand 1 tracker
+        const t1X = Math.cos(trackAngle) * radius;
+        const t1Z = Math.sin(trackAngle) * radius;
+        const p1 = transform(t1X, trackY, t1Z);
+        if (p1.pz > 10) {
+            projected.push({ type: 'sprite', sprite: sprBlueLarge, px: p1.px, py: p1.py, pz: p1.pz, scale: 120 * p1.scale, alpha: 1 });
+            projected.push({ type: 'sprite', sprite: sprWhiteSmall, px: p1.px, py: p1.py, pz: p1.pz, scale: 40 * p1.scale, alpha: 1 });
+        }
+        
+        // Strand 2 tracker
+        const t2X = Math.cos(trackAngle + Math.PI) * radius;
+        const t2Z = Math.sin(trackAngle + Math.PI) * radius;
+        const p2 = transform(t2X, trackY, t2Z);
+        if (p2.pz > 10) {
+            projected.push({ type: 'sprite', sprite: sprGoldLarge, px: p2.px, py: p2.py, pz: p2.pz, scale: 120 * p2.scale, alpha: 1 });
+            projected.push({ type: 'sprite', sprite: sprWhiteSmall, px: p2.px, py: p2.py, pz: p2.pz, scale: 40 * p2.scale, alpha: 1 });
+        }
+
         projected.sort((a, b) => b.pz - a.pz);
 
         // Reverting to source-over solves massively GPU lagging composite operations
@@ -269,7 +292,11 @@ const DNACanvas = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="dna-canvas" />;
+  return (
+    <div className="dna-canvas-wrapper">
+      <canvas ref={canvasRef} className="dna-canvas" />
+    </div>
+  );
 };
 
 
@@ -278,18 +305,18 @@ const DNACanvas = () => {
    ═══════════════════════════════════════════════════════ */
 
 const BLOCKS = [
-  { align: "left", icon: <Layers size={20} strokeWidth={1.5} />, accent: "#4A9EFF", title: "Cinematic\nInteractions",
-    desc: "Motion is treated as a core architectural component. I engineer fluid, physics-driven interactions using advanced WebGL and GSAP mechanics to create memorable narrative journeys.",
-    tags: ["WebGL", "GSAP", "Micro-interactions"] },
-  { align: "right", icon: <Cpu size={20} strokeWidth={1.5} />, accent: "#C9A96E", title: "Scalable\nArchitecture",
-    desc: "Building resilient front-to-back technical foundations. Tailored React systems and server infrastructure designed securely for high-traffic environments.",
-    tags: ["React ecosystem", "Node engines", "System Design"] },
-  { align: "left", icon: <Diamond size={20} strokeWidth={1.5} />, accent: "#E8724A", title: "Precision\nEngineering",
-    desc: "Translating sophisticated design language into flawlessly executed code. A relentless focus on typography, generous whitespace, and structural visual integrity.",
-    tags: ["UI/UX", "CSS Architecture", "Figma integration"] },
-  { align: "right", icon: <Gauge size={20} strokeWidth={1.5} />, accent: "#10B981", title: "Obsessive\nOptimization",
-    desc: "Hardware-accelerated rendering and strict frame budgeting. Deep commitment to perfect web vitals and ensuring pristine 60fps performance across all device dimensions.",
-    tags: ["Lighthouse 100", "Web Vitals", "Asset optimization"] },
+  { align: "left", icon: <Layers size={20} strokeWidth={1.5} />, accent: "#E27D60", title: "Frontend\nEngineering",
+    desc: "I build rich, interactive client-side applications using React, Next.js, and modern CSS to create highly engaging user experiences.",
+    tags: ["React", "JavaScript", "Animations"] },
+  { align: "right", icon: <Cpu size={20} strokeWidth={1.5} />, accent: "#E8A87C", title: "Backend\nSystems",
+    desc: "Building resilient front-to-back technical foundations. Tailored API systems and server infrastructure designed securely for scale.",
+    tags: ["Node.js", "Express", "PostgreSQL"] },
+  { align: "left", icon: <Diamond size={20} strokeWidth={1.5} />, accent: "#C38D9E", title: "Product\nDesign",
+    desc: "Translating mockups into flawlessly executed code. A strong focus on accessibility, whitespace, and structural visual integrity.",
+    tags: ["UI/UX", "Tailwind", "Responsive"] },
+  { align: "right", icon: <Gauge size={20} strokeWidth={1.5} />, accent: "#A8A29E", title: "Web\nPerformance",
+    desc: "Strict frame budgeting and optimization. Deep commitment to perfect web vitals and ensuring pristine load times across all devices.",
+    tags: ["Optimization", "Web Vitals", "Lighthouse"] },
 ];
 
 
@@ -303,11 +330,11 @@ const AskMeBubble = () => {
   const [active, setActive] = useState(0);
 
   const qna = [
-    { q: "What drives your approach to animation?", a: "I view motion as digital body language. Rather than arbitrarily moving elements, I use physics-driven GSAP to ensure every transition communicates narrative and intent." },
-    { q: "How do you view the relationship between design & code?", a: "They are inseparable. Exceptional engineering relies on impeccable aesthetics, and luxury design requires flawless performance to be fully realized." },
-    { q: "What does your technical stack look like?", a: "I lean heavily into React/Vite for modular front-ends, Node for robust APIs, and leverage raw WebGL or GSAP for hardware-accelerated visual fidelity." },
-    { q: "Are you currently accepting freelance projects?", a: "I selectively partner with ambitious brands and individuals who value digital excellence. Let's start a conversation." },
-    { q: "How do you guarantee performance under heavy graphics?", a: "By strict frame-budgeting. I offload heavy lifting to the GPU, implement aggressive lazy-loading, and prioritize raw DOM efficiency." },
+    { q: "What drives your passion for coding?", a: "I love the process of turning complex logic into accessible, beautiful interfaces. Solving real problems with elegant code is what got me started." },
+    { q: "How do you view the relationship between design & code?", a: "They go hand-in-hand. Great engineering relies on solid aesthetics, and good design needs flawless performance to feel right to the user." },
+    { q: "What does your technical stack look like?", a: "I lean into React/Next.js for front-ends, Node/Express for backend APIs, and I enjoy adding subtle animations with GSAP where appropriate." },
+    { q: "Are you currently accepting new opportunities?", a: "I'm always open to discussing interesting projects or roles. Let's start a conversation." },
+    { q: "How do you guarantee performance?", a: "By sticking to best practices, lazy-loading assets, monitoring Web Vitals, and avoiding unnecessary React re-renders." },
   ];
 
   useEffect(() => {
@@ -399,16 +426,16 @@ const AboutSection = () => {
 
       <div className="about-content-layer">
         <header className="about-header">
-          <span className="about-label">CRAFT & METHOD</span>
+          <span className="about-label">BACKGROUND & EXPERTISE</span>
           <h2 className="about-heading">
-            {split("Designing the")}
+            {split("Building robust,")}
             <br />
-            {split("intersection of")}
+            {split("user-centric")}
             <br />
-            {split("logic & luxury.")}
+            {split("web experiences.")}
           </h2>
           <p className="about-sub">
-            I specialize in architecting immersive digital environments that balance premium visual fidelity with uncompromising engineering. Every project is an opportunity to push the limits of modern web technology.
+            I am a software developer who focuses on writing clean, accessible code. Whether I'm building a complex dashboard or a simple landing page, I prioritize performance and usability.
           </p>
         </header>
 
@@ -450,9 +477,9 @@ const AboutSection = () => {
 
         <div className="about-stats-row">
           {[
-            { n: "3+", l: "Years Expertise" },
-            { n: "25+", l: "Digital Products" },
-            { n: "15+", l: "Brands Elevated" },
+            { n: "3+", l: "Years Experience" },
+            { n: "25+", l: "Projects Shipped" },
+            { n: "10+", l: "Open Source" },
             { n: "100", l: "Lighthouse Score" },
           ].map(function (s, i) {
             return (

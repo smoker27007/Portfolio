@@ -9,10 +9,10 @@
 }
 
 .nav-scrolled {
-  background: rgba(12, 24, 33, 0.85);
+  background: rgba(252, 252, 250, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(43, 37, 34, 0.04);
 }
 
 .nav-inner {
@@ -34,7 +34,7 @@
   font-family: var(--font-inter);
   font-size: 13px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(43, 37, 34, 0.6);
   text-decoration: none;
   letter-spacing: 0.02em;
   transition: color 0.3s ease;
@@ -48,12 +48,12 @@
   left: 0;
   width: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(43, 37, 34, 0.5);
   transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .nav-link-item:hover {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(43, 37, 34, 0.95);
 }
 
 .nav-link-item:hover::after {
@@ -71,7 +71,7 @@
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(43, 37, 34, 0.9);
   letter-spacing: 0.12em;
   text-transform: none;
   white-space: nowrap;
@@ -88,21 +88,21 @@
   font-family: var(--font-inter);
   font-size: 12px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(43, 37, 34, 0.45);
   text-decoration: none;
   letter-spacing: 0.02em;
   transition: color 0.3s ease;
 }
 
 .nav-contact:hover {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(43, 37, 34, 0.85);
 }
 
 .nav-mobile-toggle {
   display: none;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(43, 37, 34, 0.7);
   cursor: pointer;
 }
 
@@ -111,7 +111,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 24px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(43, 37, 34, 0.06);
 }
 
 .nav-mobile-menu.active {
@@ -122,14 +122,14 @@
   font-family: var(--font-inter);
   font-size: 16px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(43, 37, 34, 0.7);
   text-decoration: none;
   padding: 8px 0;
   transition: color 0.3s ease;
 }
 
 .nav-mobile-link:hover {
-  color: white;
+  color: var(--accent);
 }
 
 @media (max-width: 768px) {

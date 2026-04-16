@@ -261,55 +261,55 @@ const Projects = () => {
   const projects = [
     {
       id: 1,
-      title: 'NexGen Dashboard',
-      category: 'Analytics Platform',
-      description: 'A comprehensive data analytics platform with real-time updates, interactive visualizations, and AI-powered insights.',
+      title: 'Finance Dashboard',
+      category: 'Web Application',
+      description: 'A responsive dashboard built with React and D3.js. Features include user authentication, real-time data filtering, and dark mode support.',
       image: dashboardImg,
       tags: ['React', 'D3.js', 'Node.js', 'PostgreSQL'],
-      role: 'Full-Stack Development',
+      role: 'Full-Stack Developer',
       metrics: [
-        { label: 'Years Expertise', value: '3+' },
-        { label: 'Digital Products', value: '25+' },
-        { label: 'Brands Elevated', value: '15+' },
-        { label: 'Lighthouse Score', value: '100' }
+        { label: 'Time tracking', value: '-20%' },
+        { label: 'Uptime', value: '99.9%' },
+        { label: 'User Rating', value: '4.8/5' },
+        { label: 'Load Time', value: '< 1s' }
       ],
-      accentColor: '#4a9eff',
+      accentColor: '#E27D60',
       link: '#',
       github: '#'
     },
     {
       id: 2,
-      title: 'Aura Mobile App',
-      category: 'Healthcare Technology',
-      description: 'A mobile application for wellness tracking with AI-driven health recommendations and personalized daily routines.',
+      title: 'Task Manager App',
+      category: 'Productivity Tool',
+      description: 'A robust task management tool featuring drag-and-drop boards, collaborative workspaces, and real-time synchronization.',
       image: mobileImg,
-      tags: ['React Native', 'Firebase', 'Machine Learning', 'TensorFlow'],
-      role: 'Lead Developer',
+      tags: ['Next.js', 'Firebase', 'Redux', 'Tailwind'],
+      role: 'Frontend Lead',
       metrics: [
-        { label: 'Downloads', value: '150K+' },
-        { label: 'Rating', value: '4.8⭐' },
-        { label: 'Active Users', value: '50K+' },
-        { label: 'Features', value: '20+' }
+        { label: 'Active Users', value: '2k+' },
+        { label: 'Daily Tasks', value: '15k+' },
+        { label: 'Crash Rate', value: '0.1%' },
+        { label: 'Test Coverage', value: '94%' }
       ],
-      accentColor: '#00d4aa',
+      accentColor: '#E8A87C',
       link: '#',
       github: '#'
     },
     {
       id: 3,
-      title: 'LuxeCommerce',
+      title: 'Local E-Commerce',
       category: 'E-Commerce Platform',
-      description: 'A premium e-commerce solution with advanced payment integration, inventory management, and customer analytics.',
+      description: 'A modern storefront for a local boutique. Features include a custom cart solution, Stripe integration, and an intuitive admin dashboard.',
       image: ecommerceImg,
-      tags: ['Next.js', 'Stripe', 'MongoDB', 'AWS'],
-      role: 'Full-Stack Developer',
+      tags: ['React', 'Stripe', 'MongoDB', 'AWS S3'],
+      role: 'Sole Developer',
       metrics: [
-        { label: 'Monthly Revenue', value: '$2M+' },
-        { label: 'Conversion Rate', value: '3.8%' },
-        { label: 'Product SKUs', value: '10K+' },
-        { label: 'Customer Base', value: '100K+' }
+        { label: 'Sales Increase', value: '35%' },
+        { label: 'Bounce Rate', value: '-15%' },
+        { label: 'Products', value: '500+' },
+        { label: 'Happy Clients', value: '100+' }
       ],
-      accentColor: '#b84dff',
+      accentColor: '#C38D9E',
       link: '#',
       github: '#'
     }

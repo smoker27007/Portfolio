@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Code, ExternalLink } from 'lucide-react';
+import { Code, ExternalLink, Mail } from 'lucide-react';
 import './ContactSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -151,12 +151,12 @@ const ContactSection = () => {
         </h2>
 
         <p className="contact-subtitle">
-          Whether you need a website redesign, brand strategy, or full digital transformation, I'm here to help bring your vision to life.
+          Whether you have a specific project in mind, need help with a web app, or just want to connect, I'm here to chat. Let's build something great.
         </p>
 
         <div className="contact-buttons">
-          <button className="cta-button-dark">START A PROJECT →</button>
-          <button className="cta-button-dark">SCHEDULE A CALL</button>
+          <button className="cta-button-dark">SAY HELLO →</button>
+          <button className="cta-button-dark">VIEW RESUME</button>
         </div>
 
         <div className="contact-email-section">
