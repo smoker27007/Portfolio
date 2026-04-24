@@ -282,7 +282,7 @@ const Projects = () => {
           <div className="proj-progress-bar" ref={progressRef} />
         </div>
 
-        <div className="proj-count" ref={countRef} aria-live="polite">01 / 05</div>
+        <div className="proj-count" ref={countRef} aria-live="polite">01 / 05</ div>
 
         <div className="proj-track" ref={trackRef}>
 
@@ -312,17 +312,8 @@ const Projects = () => {
                 <span className="pj-badge">{project.year}</span>
               </div>
 
-              <div className="pj-body">
-                <div className="pj-top-row">
-                  <span className="pj-index">0{project.id}</span>
-                  <span className="pj-status" style={{ color: 'var(--accent)' }}>
-                    ● {project.status}
-                  </span>
-                </div>
-
-                <p className="pj-category">{project.category}</p>
-                <h3 className="pj-title">{project.title}</h3>
-                <p className="pj-desc">{project.description}</p>
+             
+                  
 
                 <div className="pj-meta-row">
                   <div className="pj-meta-item">
