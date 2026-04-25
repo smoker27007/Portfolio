@@ -105,8 +105,8 @@
 }
 
 .about-block { width: 100%; display: flex; }
-.about-block--left { justify-content: flex-start; padding-right: 50%; }
-.about-block--right { justify-content: flex-end; padding-left: 50%; }
+.about-block--left { justify-content: flex-start; padding-right: 15%; }
+.about-block--right { justify-content: flex-end; padding-left: 15%; }
 
 .about-block-inner {
   position: relative;

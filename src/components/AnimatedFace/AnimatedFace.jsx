@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import avatarImg from "../../assets/avatar.png";
+import { WorkspaceContext } from "../Workspace/Workspace";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,19 +13,22 @@ const AnimatedFace = () => {
   const scrollRef = useRef(0);
   const animFrameRef = useRef(0);
   const readyRef = useRef(false);
+  const inViewRef = useRef(true);
   const entryProgressRef = useRef(0);
   const dimensionsRef = useRef({ w: 0, h: 0, offsetX: 0, offsetY: 0 });
+  const { scrollerRef, isReady } = React.useContext(WorkspaceContext);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !scrollerRef.current || !isReady) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const section = canvas.closest("section");
+      const w = section ? section.clientWidth : window.innerWidth;
+      const h = section ? section.clientHeight : window.innerHeight;
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
@@ -44,10 +48,12 @@ const AnimatedFace = () => {
       };
     };
     resize();
+    // Also listen to the scroller resize, not just window resize
     window.addEventListener("resize", resize);
+    scrollerRef.current?.addEventListener("resize", resize);
 
-    const GAP = 3;
-    const DOT_RADIUS = 2.2;
+    const GAP = 5;
+    const DOT_RADIUS = 3.5;
     const MOUSE_RADIUS = 120;
     const PUSH_FORCE = 18;
     const RETURN_SPEED = 0.14;
@@ -172,9 +178,19 @@ const AnimatedFace = () => {
 
     const heroSection = canvas.closest("section");
     let st;
+    let observer;
     if (heroSection) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          inViewRef.current = entry.isIntersecting;
+        },
+        { root: scrollerRef.current, threshold: 0 }
+      );
+      observer.observe(heroSection);
+
       st = ScrollTrigger.create({
         trigger: heroSection,
+        scroller: scrollerRef.current,
         start: "top top",
         end: "+=150%",
         onUpdate: (self) => {
@@ -191,13 +207,14 @@ const AnimatedFace = () => {
 
     const animate = () => {
       if (!ctx || !canvas) return;
-      const { w, h } = dimensionsRef.current;
-      ctx.clearRect(0, 0, w, h);
 
-      if (!readyRef.current) {
+      if (!readyRef.current || !inViewRef.current) {
         animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
+
+      const { w, h } = dimensionsRef.current;
+      ctx.clearRect(0, 0, w, h);
 
       const mouse = mouseRef.current;
       const particles = particlesRef.current;
@@ -273,7 +290,16 @@ const AnimatedFace = () => {
 
     animFrameRef.current = requestAnimationFrame(animate);
 
-    const handleMouseMove = (e) => { mouseRef.current = { x: e.clientX, y: e.clientY }; };
+    const handleMouseMove = (e) => {
+      // Convert browser-viewport mouse coords to section-local coords
+      const section = canvas.closest("section");
+      if (section) {
+        const rect = section.getBoundingClientRect();
+        mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      } else {
+        mouseRef.current = { x: e.clientX, y: e.clientY };
+      }
+    };
     const handleMouseLeave = () => { mouseRef.current = { x: -9999, y: -9999 }; };
     window.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseleave", handleMouseLeave);
@@ -281,7 +307,9 @@ const AnimatedFace = () => {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       if (st) st.kill();
+      if (observer) observer.disconnect();
       window.removeEventListener("resize", resize);
+      scrollerRef.current?.removeEventListener("resize", resize);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animFrameRef.current);
     };

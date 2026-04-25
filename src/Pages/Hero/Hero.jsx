@@ -1,15 +1,14 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
+
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AnimatedFace from "../../components/AnimatedFace/AnimatedFace";
 import "./Hero.css";
 import avatar1 from "../../assets/heroBG.png";
+import { WorkspaceContext } from "../../components/Workspace/Workspace";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Precompute a stable set of shard "crack origin points" in normalised [0,1] space.
-// Each character is assigned to its nearest crack point, so adjacent characters
-// fly in the same direction — giving the visual impression of glass plates separating.
 const CRACK_ORIGINS = Array.from({ length: 12 }, (_, i) => ({
   x: 0.05 + (i % 4) * 0.3 + Math.random() * 0.1,
   y: 0.1 + Math.floor(i / 4) * 0.4 + Math.random() * 0.15,
@@ -18,13 +17,13 @@ const CRACK_ORIGINS = Array.from({ length: 12 }, (_, i) => ({
 const Hero = () => {
   const sectionRef = useRef(null);
   const bgRef = useRef(null);
+  const { scrollerRef, isReady } = React.useContext(WorkspaceContext);
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    if (!section || !scrollerRef.current || !isReady) return;
 
     const ctx = gsap.context(() => {
-      // ── Entry animation ──────────────────────────────────────────
       const entryTL = gsap.timeline({ defaults: { ease: "power4.out" } });
 
       gsap.set(".hero-char", { opacity: 0, y: 100, scale: 0.6 });
@@ -86,7 +85,6 @@ const Hero = () => {
         section.addEventListener("mouseleave", handleMouseLeave);
       }
 
-      // ── Character hover ───────────────────────────────────────────
       const chars = section.querySelectorAll(".hero-char");
       const charListeners = [];
       if (canUseHover) {
@@ -99,10 +97,10 @@ const Hero = () => {
         });
       }
 
-      // ── Scroll dismantling: glass-shard style ─────────────────────
       const scrollTL = gsap.timeline({
         scrollTrigger: {
           trigger: section,
+          scroller: scrollerRef.current,
           start: "top top",
           end: "+=150%",
           scrub: 1.5,
@@ -112,11 +110,13 @@ const Hero = () => {
         },
       });
 
-      // Measure the hero section so we can compute full-viewport scatter
-      const getViewport = () => ({
-        vw: window.innerWidth,
-        vh: window.innerHeight,
-      });
+      // Compute viewport based on the IDE editor container
+      const getViewport = () => {
+        const scroller = scrollerRef.current;
+        if (!scroller) return { vw: window.innerWidth, vh: window.innerHeight };
+        const rect = scroller.getBoundingClientRect();
+        return { vw: rect.width, vh: rect.height };
+      };
 
       // Assign each char a glass-shard burst vector based on nearest crack origin
       chars.forEach((char) => {
@@ -221,7 +221,7 @@ const Hero = () => {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [isReady]);
 
   const splitLine = (text, isOutline = false) =>
     text.split("").map((c, i) => (
@@ -231,7 +231,7 @@ const Hero = () => {
     ));
 
   return (
-    <section ref={sectionRef} className="hero-section" id="home">
+    <section ref={sectionRef} className="hero-section" id="hero">
       <div className="hero-grid-base"></div>
       <div 
         ref={bgRef} 

@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
+
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Code, ExternalLink, Mail } from 'lucide-react';
+import { WorkspaceContext } from "../Workspace/Workspace";
 import './ContactSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -9,10 +11,11 @@ gsap.registerPlugin(ScrollTrigger);
 const ContactSection = () => {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
+  const { scrollerRef, isReady } = React.useContext(WorkspaceContext);
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    if (!section || !scrollerRef.current || !isReady) return;
 
     const ctx = gsap.context(() => {
       // ════════════════════════════════════════════════════════════
@@ -33,6 +36,7 @@ const ContactSection = () => {
           delay: 0.2,
           scrollTrigger: {
             trigger: section,
+            scroller: scrollerRef.current,
             start: 'top 80%',
             toggleActions: 'play none none none'
           }
@@ -50,6 +54,7 @@ const ContactSection = () => {
         delay: 0.5,
         scrollTrigger: {
           trigger: section,
+          scroller: scrollerRef.current,
           start: 'top 80%',
           toggleActions: 'play none none none'
         }
@@ -69,6 +74,7 @@ const ContactSection = () => {
           delay: 0.7 + i * 0.15,
           scrollTrigger: {
             trigger: section,
+            scroller: scrollerRef.current,
             start: 'top 80%',
             toggleActions: 'play none none none'
           }
@@ -85,6 +91,7 @@ const ContactSection = () => {
         delay: 1,
         scrollTrigger: {
           trigger: section,
+          scroller: scrollerRef.current,
           start: 'top 80%',
           toggleActions: 'play none none none'
         }
@@ -104,6 +111,7 @@ const ContactSection = () => {
           delay: 1.1 + i * 0.1,
           scrollTrigger: {
             trigger: section,
+            scroller: scrollerRef.current,
             start: 'top 80%',
             toggleActions: 'play none none none'
           }
@@ -120,6 +128,7 @@ const ContactSection = () => {
         delay: 1.4,
         scrollTrigger: {
           trigger: section,
+          scroller: scrollerRef.current,
           start: 'top 80%',
           toggleActions: 'play none none none'
         }
@@ -127,7 +136,7 @@ const ContactSection = () => {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+  }, [isReady]);
 
   return (
     <section
