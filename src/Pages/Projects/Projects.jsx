@@ -114,17 +114,18 @@ const projects = [
 ];
 
 const Projects = () => {
-  const sectionRef    = useRef(null);
-  const wrapRef       = useRef(null);
-  const trackRef      = useRef(null);
-  const cursorRef     = useRef(null);
-  const progressRef   = useRef(null);
-  const headerRef     = useRef(null);
-  const countRef      = useRef(null);
-  const cardsRef      = useRef([]);
+  const sectionRef  = useRef(null);
+  const wrapRef     = useRef(null);
+  const trackRef    = useRef(null);
+  const cursorRef   = useRef(null);
+  const progressRef = useRef(null);
+  const headerRef   = useRef(null);
+  const countRef    = useRef(null);
+  const cardsRef    = useRef([]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+
       gsap.fromTo(
         headerRef.current?.querySelectorAll('.proj-header-line'),
         { yPercent: 110, opacity: 0 },
@@ -137,7 +138,6 @@ const Projects = () => {
           scrollTrigger: { trigger: headerRef.current, start: 'top 80%' },
         }
       );
-
       const totalScroll = trackRef.current.scrollWidth - window.innerWidth;
 
       const hScroll = gsap.to(trackRef.current, {
@@ -168,9 +168,13 @@ const Projects = () => {
 
       cardsRef.current.forEach((card) => {
         if (!card) return;
-        const img   = card.querySelector('.pj-img');
-        const title = card.querySelector('.pj-title');
-        const meta  = card.querySelector('.pj-meta-row');
+        const img    = card.querySelector('.pj-img');
+        const title  = card.querySelector('.pj-title');
+        const meta   = card.querySelector('.pj-meta-row');
+        const body   = card.querySelector('.pj-body');
+        const chips  = card.querySelector('.pj-chips');
+        const badge  = card.querySelector('.pj-badge');
+        const metrics = card.querySelector('.pj-metrics');
 
         gsap.fromTo(
           img,
@@ -184,6 +188,22 @@ const Projects = () => {
               start: 'left right',
               end: 'right left',
               scrub: true,
+            },
+          }
+        );
+
+        gsap.fromTo(
+          card,
+          { scale: 0.88, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: card,
+              containerAnimation: hScroll,
+              start: 'left 95%',
             },
           }
         );
@@ -204,6 +224,61 @@ const Projects = () => {
             },
           }
         );
+
+        if (chips) {
+          gsap.fromTo(
+            chips.children,
+            { y: 20, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              stagger: 0.06,
+              duration: 0.6,
+              ease: 'back.out(1.4)',
+              scrollTrigger: {
+                trigger: card,
+                containerAnimation: hScroll,
+                start: 'left 85%',
+              },
+            }
+          );
+        }
+
+        if (badge) {
+          gsap.fromTo(
+            badge,
+            { scale: 0, opacity: 0 },
+            {
+              scale: 1,
+              opacity: 1,
+              duration: 0.5,
+              ease: 'back.out(2)',
+              scrollTrigger: {
+                trigger: card,
+                containerAnimation: hScroll,
+                start: 'left 82%',
+              },
+            }
+          );
+        }
+
+        if (metrics) {
+          gsap.fromTo(
+            metrics,
+            { y: 30, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.7,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: card,
+                containerAnimation: hScroll,
+                start: 'left 80%',
+              },
+            }
+          );
+        }
       });
 
     }, sectionRef);
@@ -282,7 +357,7 @@ const Projects = () => {
           <div className="proj-progress-bar" ref={progressRef} />
         </div>
 
-        <div className="proj-count" ref={countRef} aria-live="polite">01 / 05</ div>
+        <div className="proj-count" ref={countRef} aria-live="polite">01 / 05</div>
 
         <div className="proj-track" ref={trackRef}>
 
@@ -293,6 +368,7 @@ const Projects = () => {
               ref={(el) => { cardsRef.current[index] = el; }}
               style={{ '--accent': project.accentColor }}
             >
+
               <div className="pj-visual">
                 <img
                   src={project.image}
@@ -312,8 +388,17 @@ const Projects = () => {
                 <span className="pj-badge">{project.year}</span>
               </div>
 
-             
-                  
+              <div className="pj-body">
+                <div className="pj-top-row">
+                  <span className="pj-index">0{project.id}</span>
+                  <span className="pj-status" style={{ color: 'var(--accent)' }}>
+                    ● {project.status}
+                  </span>
+                </div>
+
+                <p className="pj-category">{project.category}</p>
+                <h3 className="pj-title">{project.title}</h3>
+                <p className="pj-desc">{project.description}</p>
 
                 <div className="pj-meta-row">
                   <div className="pj-meta-item">
