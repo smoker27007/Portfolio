@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════
-   Main Workspace Styles — IDE / VS Code Theme
-   ═══════════════════════════════════════════════════════════════ */
+
 
 .portfolio-ide-container {
   position: fixed;
@@ -14,7 +12,6 @@
   z-index: 1000;
 }
 
-/* ── Title Bar ── */
 .ide-title-bar {
   height: 30px;
   background: #323233;
@@ -98,14 +95,12 @@
 .window-icon:hover { background: rgba(255, 255, 255, 0.1); }
 .window-icon.close:hover { background: #e81123; }
 
-/* ── Main Layout ── */
 .ide-main {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-/* ── Activity Bar ── */
 .ide-activity-bar {
   width: 48px;
   background: #333333;
@@ -134,7 +129,6 @@
   border-left: 2px solid #ffffff;
 }
 
-/* ── Sidebar (Explorer) ── */
 .ide-sidebar {
   width: 260px;
   flex-shrink: 0;
@@ -215,7 +209,6 @@
   color: #ffffff;
 }
 
-/* Indentation Levels */
 .tree-sub-items {
   display: flex;
   flex-direction: column;
@@ -241,7 +234,6 @@
   padding-left: 56px;
 }
 
-/* Icons */
 .folder-icon { color: #858585; }
 .folder-icon.next { color: #858585; }
 .folder-icon.modules { color: #858585; }
@@ -269,7 +261,6 @@
   margin-right: 4px;
 }
 
-/* ── Editor Area ── */
 .ide-editor {
   flex: 1;
   display: flex;
@@ -283,7 +274,7 @@
   background: #252526;
   display: flex;
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; 
 }
 
 .editor-tabs::-webkit-scrollbar { display: none; }
@@ -330,7 +321,6 @@
 .tab:hover .tab-close { opacity: 1; }
 .tab-close:hover { background: rgba(255, 255, 255, 0.1); }
 
-/* ── Editor Content ── */
 .editor-content-scroll {
   flex: 1;
   display: flex;
@@ -338,7 +328,6 @@
   overflow-x: hidden;
   position: relative;
   scrollbar-gutter: stable;
-  /* Use container queries for child sections */
   container-type: inline-size;
 }
 
@@ -392,7 +381,6 @@
   opacity: 0.8;
 }
 
-/* ── Status Bar ── */
 .ide-status-bar {
   height: 22px;
   background: #007acc;
@@ -431,7 +419,6 @@
 
 .time { margin-left: 10px; opacity: 0.9; }
 
-/* ── Scrollbar Styles ── */
 .editor-content-scroll::-webkit-scrollbar {
   width: 14px;
 }
@@ -454,50 +441,39 @@
   .ide-title-text { display: none; }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SCOPED SECTION OVERRIDES — make content fit inside IDE editor
-   All sections use 100vh/100vw expecting a full-viewport layout.
-   Inside the IDE editor pane, we override these to fit correctly.
-   ═══════════════════════════════════════════════════════════════ */
-
-/* The editor scroll container fills remaining space */
 .editor-content-scroll {
-  height: 0; /* Let flex:1 control the height, but force scroll context */
+  height: 0; 
 }
 
-/* Sections should fill the editor viewport height, not the browser viewport */
 .editor-real-content .hero-section,
 .editor-real-content .hero-sticky {
   height: 100cqh;
   min-height: 600px;
 }
 
-/* Remove the overflow:hidden that prevents scrolling within the editor */
 .editor-real-content .about-section {
   overflow: visible;
 }
 
-/* Projects: pin-wrap should match the editor height, not 100vh */
 .editor-real-content .proj-pin-wrap,
 .editor-real-content .proj-track {
   height: 100cqh;
   min-height: 600px;
 }
 
-/* Contact: let it size naturally, not try to be 100vh */
+
 .editor-real-content .contact-section {
   min-height: auto;
   padding-top: 80px;
   padding-bottom: 80px;
 }
 
-/* Fallback: browsers without cqh support — use a large px value */
 @supports not (height: 1cqh) {
   .editor-real-content .hero-section,
   .editor-real-content .hero-sticky,
   .editor-real-content .proj-pin-wrap,
   .editor-real-content .proj-track {
-    height: calc(100vh - 87px); /* viewport minus titlebar(30) + tabs(35) + statusbar(22) */
+    height: calc(100vh - 87px); 
     min-height: 600px;
   }
 }
