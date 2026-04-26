@@ -1,3 +1,6 @@
+/* ═══════════════════════════════════════════════════════════════
+   Main Workspace Styles — IDE / VS Code Theme
+   ═══════════════════════════════════════════════════════════════ */
 
 .portfolio-ide-container {
   position: fixed;
@@ -6,16 +9,17 @@
   flex-direction: column;
   background: #0d0d0d;
   color: #cccccc;
-  font-family: 'segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
   z-index: 1000;
 }
 
+/* ── Title Bar ── */
 .ide-title-bar {
   height: 30px;
   background: #323233;
   display: flex;
-  aling-items: center;
+  align-items: center;
   justify-content: space-between;
   padding: 0 8px;
   border-bottom: 1px solid #2b2b2b;
@@ -25,7 +29,7 @@
 
 .ide-left-controls {
   display: flex;
-  aling-items: center;
+  align-items: center;
   gap: 10px;
 }
 
@@ -79,27 +83,29 @@
   border: 1px solid #cccccc;
 }
 
-.window-icon.minify::before {width: 10px; height: 0; }
-.window-icon.expand::before {width: 10px; height: 10px;}
-.window-icon.close::before {
-  width: 10px; height: 10px;
+.window-icon.minify::before { width: 10px; height: 0; }
+.window-icon.expand::before { width: 10px; height: 10px; }
+.window-icon.close::before { 
+  width: 10px; height: 10px; 
   background: transparent;
   border: none;
-  content: 'x';
+  content: '×';
   font-size: 20px;
   line-height: 10px;
   color: #cccccc;
 }
 
 .window-icon:hover { background: rgba(255, 255, 255, 0.1); }
-.window-icon.clos:hover { background: #e81123; }
+.window-icon.close:hover { background: #e81123; }
 
+/* ── Main Layout ── */
 .ide-main {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
+/* ── Activity Bar ── */
 .ide-activity-bar {
   width: 48px;
   background: #333333;
@@ -127,6 +133,8 @@
   color: #ffffff;
   border-left: 2px solid #ffffff;
 }
+
+/* ── Sidebar (Explorer) ── */
 .ide-sidebar {
   width: 260px;
   flex-shrink: 0;
@@ -149,7 +157,7 @@
   letter-spacing: 0.5px;
 }
 
-.header-more {  cursor: pointer; }
+.header-more { cursor: pointer; }
 .header-more:hover { color: #ffffff; }
 
 .sidebar-section {
@@ -157,22 +165,339 @@
 }
 
 .sidebar-section.collapsed {
-  border-bottom: 1px solid #2b2b2b;;
+  border-top: 1px solid #2b2b2b;
 }
 
 .section-title {
   height: 22px;
-  background: #2b2b2b;
+  background: #2d2d2d;
   display: flex;
   align-items: center;
   gap: 2px;
   padding: 0 4px;
   font-size: 11px;
   font-weight: 700;
-  color:#ffffff;
+  color: #ffffff;
   cursor: pointer;
   text-transform: uppercase;
 }
 
+.file-tree {
+  padding: 2px 0;
+  display: flex;
+  flex-direction: column;
+}
 
+.tree-folder, .tree-file, .tree-symbol {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+  font-size: 13px;
+  color: #cccccc;
+}
 
+.tree-folder:hover, .tree-file:hover, .tree-symbol:hover {
+  background: #2a2d2e;
+}
+
+.tree-file.active {
+  background: #37373d;
+  color: #ffffff;
+}
+
+.tree-file.highlighted {
+  background: #094771;
+  color: #ffffff;
+}
+
+/* Indentation Levels */
+.tree-sub-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-sub-items > .tree-folder,
+.tree-sub-items > .tree-file {
+  padding-left: 24px;
+}
+
+.tree-symbols {
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-symbol {
+  padding-left: 44px;
+  color: #bbbbbb;
+  font-size: 12px;
+}
+
+.projects-sub .tree-symbol {
+  padding-left: 56px;
+}
+
+/* Icons */
+.folder-icon { color: #858585; }
+.folder-icon.next { color: #858585; }
+.folder-icon.modules { color: #858585; }
+.folder-icon.public { color: #858585; }
+.folder-icon.src { color: #858585; }
+.folder-icon.mywork { color: #858585; }
+
+.file-icon.tsx { color: #519aba; }
+.file-icon.star { color: #e1c03d; }
+.file-icon.json { color: #cbcb41; }
+
+.symbol-icon { 
+  color: #3794ff; 
+  opacity: 0.8;
+}
+
+.symbol-icon.mywork { color: #007acc; }
+
+.symbol-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #007acc;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+/* ── Editor Area ── */
+.ide-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #1e1e1e;
+  position: relative;
+}
+
+.editor-tabs {
+  height: 35px;
+  background: #252526;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.editor-tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  min-width: 120px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 15px;
+  background: #2d2d2d;
+  border-right: 1px solid #252526;
+  font-size: 12px;
+  color: #969696;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.tab.active {
+  background: #1e1e1e;
+  color: #ffffff;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #007acc;
+}
+
+.tab-close {
+  margin-left: auto;
+  padding: 2px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.tab:hover .tab-close { opacity: 1; }
+.tab-close:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* ── Editor Content ── */
+.editor-content-scroll {
+  flex: 1;
+  display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  scrollbar-gutter: stable;
+  /* Use container queries for child sections */
+  container-type: inline-size;
+}
+
+.editor-gutter {
+  width: 50px;
+  background: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px 10px 50px 0;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  color: #858585;
+  user-select: none;
+  border-right: 1px solid #333;
+}
+
+.gutter-no {
+  height: 24px;
+  line-height: 24px;
+}
+
+.editor-real-content {
+  flex: 1;
+  padding-bottom: 200px;
+  container-type: size;
+  container-name: editor;
+}
+
+.editor-section-wrap {
+  position: relative;
+}
+
+.editor-section-header {
+  height: 32px;
+  background: #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid #2b2b2b;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  color: #6a9955;
+}
+
+.comment {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ── Status Bar ── */
+.ide-status-bar {
+  height: 22px;
+  background: #007acc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-size: 11px;
+  color: #ffffff;
+  z-index: 100;
+}
+
+.status-left, .status-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  cursor: pointer;
+  height: 22px;
+}
+
+.status-item:hover { background: rgba(255, 255, 255, 0.1); }
+
+.error-icon, .warning-icon { color: #ffffff; }
+
+.status-item.live {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0 8px;
+}
+
+.time { margin-left: 10px; opacity: 0.9; }
+
+/* ── Scrollbar Styles ── */
+.editor-content-scroll::-webkit-scrollbar {
+  width: 14px;
+}
+
+.editor-content-scroll::-webkit-scrollbar-thumb {
+  background: #424242;
+  border: 3px solid #1e1e1e;
+}
+
+.editor-content-scroll::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+
+@media (max-width: 1024px) {
+  .ide-sidebar { width: 220px; }
+}
+
+@media (max-width: 768px) {
+  .ide-sidebar { display: none; }
+  .ide-activity-bar { width: 40px; }
+  .ide-menu { display: none; }
+  .ide-title-text { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCOPED SECTION OVERRIDES — make content fit inside IDE editor
+   All sections use 100vh/100vw expecting a full-viewport layout.
+   Inside the IDE editor pane, we override these to fit correctly.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* The editor scroll container fills remaining space */
+.editor-content-scroll {
+  height: 0; /* Let flex:1 control the height, but force scroll context */
+}
+
+/* Sections should fill the editor viewport height, not the browser viewport */
+.editor-real-content .hero-section,
+.editor-real-content .hero-sticky {
+  height: 100cqh;
+  min-height: 600px;
+}
+
+/* Remove the overflow:hidden that prevents scrolling within the editor */
+.editor-real-content .about-section {
+  overflow: visible;
+}
+
+/* Projects: pin-wrap should match the editor height, not 100vh */
+.editor-real-content .proj-pin-wrap,
+.editor-real-content .proj-track {
+  height: 100cqh;
+  min-height: 600px;
+}
+
+/* Contact: let it size naturally, not try to be 100vh */
+.editor-real-content .contact-section {
+  min-height: auto;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+/* Fallback: browsers without cqh support — use a large px value */
+@supports not (height: 1cqh) {
+  .editor-real-content .hero-section,
+  .editor-real-content .hero-sticky,
+  .editor-real-content .proj-pin-wrap,
+  .editor-real-content .proj-track {
+    height: calc(100vh - 87px); /* viewport minus titlebar(30) + tabs(35) + statusbar(22) */
+    min-height: 600px;
+  }
+}
