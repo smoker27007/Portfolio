@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Code, ExternalLink, Mail } from 'lucide-react';
-import { WorkspaceContext } from "../Workspace/Workspace";
+import { WorkspaceContext } from "../Workspace/WorkspaceContext";
 import './ContactSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -136,7 +136,7 @@ const ContactSection = () => {
     }, section);
 
     return () => ctx.revert();
-  }, [isReady]);
+  }, [isReady, scrollerRef]);
 
   return (
     <section

@@ -12,6 +12,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@vscode/codicons": "^0.0.45",
     "framer-motion": "^12.38.0",
     "gsap": "^3.12.2",
     "lucide-react": "^1.7.0",

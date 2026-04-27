@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight, Globe } from 'lucide-react';
-import { WorkspaceContext } from '../../components/Workspace/Workspace';
+import { WorkspaceContext } from '../../components/Workspace/WorkspaceContext';
 import './Projects.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -48,20 +48,38 @@ const projects = [
 
 const Projects = () => {
   const wrapRef = useRef(null);
+  const pinWrapRef = useRef(null);
   const trackRef = useRef(null);
   const cursorRef = useRef(null);
   const progressRef = useRef(null);
   const headerRef = useRef(null);
   const countRef = useRef(null);
+  const imageRefs = useRef([]);
   const cardsRef = useRef([]);
   const { scrollerRef, isReady } = React.useContext(WorkspaceContext);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wrap = wrapRef.current;
+    const pinWrap = pinWrapRef.current;
     const track = trackRef.current;
-    if (!wrap || !track || !scrollerRef.current || !isReady) return;
+    const scroller = scrollerRef.current;
+    if (!wrap || !pinWrap || !track || !scroller || !isReady) return;
+
+    const refreshOnImageLoad = () => ScrollTrigger.refresh();
+    const attachedImages = imageRefs.current.filter(Boolean);
+    attachedImages.forEach((img) => {
+      if (!img.complete) {
+        img.addEventListener('load', refreshOnImageLoad, { once: true });
+      }
+    });
 
     const ctx = gsap.context(() => {
+      const getTotalScroll = () => Math.max(0, track.scrollWidth - scroller.clientWidth);
+      const setProgressScale = progressRef.current
+        ? gsap.quickSetter(progressRef.current, 'scaleX')
+        : null;
+      let lastCount = -1;
+
       // Header entrance
       gsap.fromTo(
         headerRef.current?.querySelectorAll('.proj-header-line'),
@@ -74,44 +92,47 @@ const Projects = () => {
           ease: 'power3.out',
           scrollTrigger: {
             trigger: headerRef.current,
-            scroller: scrollerRef.current,
+            scroller,
             start: 'top 85%'
           }
         }
       );
 
-      const containerWidth = scrollerRef.current.clientWidth;
-      const totalScroll = track.scrollWidth - containerWidth;
-
       const hScroll = gsap.to(track, {
-        x: () => -totalScroll,
+        x: () => -getTotalScroll(),
         ease: 'none',
         scrollTrigger: {
-          scroller: scrollerRef.current,
-          trigger: wrap,
+          scroller,
+          trigger: pinWrap,
           start: 'top top',
-          end: () => `+=${totalScroll + containerWidth * 0.5}`,
+          end: () => `+=${Math.max(getTotalScroll(), scroller.clientWidth * 0.9)}`,
           pin: true,
-          scrub: 1,
+          pinSpacing: true,
+          scrub: 1.25,
           anticipatePin: 1,
+          fastScrollEnd: true,
+          refreshPriority: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            if (progressRef.current) {
-              gsap.set(progressRef.current, { scaleX: self.progress });
+            if (setProgressScale) {
+              setProgressScale(self.progress);
             }
             if (countRef.current) {
               const idx = Math.min(
                 Math.floor(self.progress * projects.length),
                 projects.length - 1
               );
-              countRef.current.textContent = `${String(idx + 1).padStart(2, '0')} / ${String(projects.length).padStart(2, '0')}`;
+              if (idx !== lastCount) {
+                lastCount = idx;
+                countRef.current.textContent = `${String(idx + 1).padStart(2, '0')} / ${String(projects.length).padStart(2, '0')}`;
+              }
             }
           }
         }
       });
 
       // Card Parallax & Entrance
-      cardsRef.current.forEach((card, i) => {
+      cardsRef.current.forEach((card) => {
         if (!card) return;
         
         gsap.fromTo(card.querySelector('.pj-img'),
@@ -121,11 +142,12 @@ const Projects = () => {
             ease: 'none',
             scrollTrigger: {
               trigger: card,
-              scroller: scrollerRef.current,
+              scroller,
               containerAnimation: hScroll,
               start: 'left right',
               end: 'right left',
-              scrub: true
+              scrub: 0.8,
+              invalidateOnRefresh: true
             }
           }
         );
@@ -134,19 +156,26 @@ const Projects = () => {
           y: 40, opacity: 0, duration: 0.8,
           scrollTrigger: {
             trigger: card,
-            scroller: scrollerRef.current,
+            scroller,
             containerAnimation: hScroll,
             start: 'left 80%'
           }
         });
       });
+
+      ScrollTrigger.refresh();
     }, wrap);
 
-    return () => ctx.revert();
+    return () => {
+      attachedImages.forEach((img) => {
+        img.removeEventListener('load', refreshOnImageLoad);
+      });
+      ctx.revert();
+    };
   }, [scrollerRef, isReady]);
 
   return (
-    <section ref={wrapRef} className="proj-section" id="projects">
+    <section ref={wrapRef} className="proj-section">
       <div className="proj-cursor" ref={cursorRef} />
       
       <div className="proj-header" ref={headerRef}>
@@ -158,46 +187,55 @@ const Projects = () => {
         </div>
       </div>
 
-      <div className="proj-track" ref={trackRef}>
-        {projects.map((project, i) => (
-          <div 
-            key={project.id} 
-            className="pj-card"
-            ref={el => cardsRef.current[i] = el}
-          >
-            <div className="pj-visual">
-              <img src={project.image} alt={project.title} className="pj-img" />
-              <div className="pj-img-overlay" />
-              <div className="pj-badge">{String(project.id).padStart(2, '0')}</div>
-            </div>
-            
-            <div className="pj-body">
-              <div className="pj-top-row">
-                <span className="pj-category">{project.category}</span>
-                <span className="pj-status">{project.year}</span>
-              </div>
-              <h3 className="pj-title">{project.title}</h3>
-              <p className="pj-desc">{project.description}</p>
-              
-              <div className="pj-chips">
-                {project.tech.map(t => <span key={t} className="pj-chip">{t}</span>)}
+      <div className="proj-pin-wrap" ref={pinWrapRef}>
+        <div className="proj-track" ref={trackRef}>
+          {projects.map((project, i) => (
+            <div 
+              key={project.id} 
+              className="pj-card"
+              ref={el => cardsRef.current[i] = el}
+            >
+              <div className="pj-visual">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="pj-img"
+                  ref={(el) => {
+                    imageRefs.current[i] = el;
+                  }}
+                />
+                <div className="pj-img-overlay" />
+                <div className="pj-badge">{String(project.id).padStart(2, '0')}</div>
               </div>
               
-              <div className="pj-actions">
-                <button className="pj-btn pj-btn-primary">
-                  VIEW CASE STUDY <ArrowUpRight size={16} />
-                </button>
-                <a href="#" className="pj-btn pj-btn-ghost"><Globe size={20} /></a>
+              <div className="pj-body">
+                <div className="pj-top-row">
+                  <span className="pj-category">{project.category}</span>
+                  <span className="pj-status">{project.year}</span>
+                </div>
+                <h3 className="pj-title">{project.title}</h3>
+                <p className="pj-desc">{project.description}</p>
+                
+                <div className="pj-chips">
+                  {project.tech.map(t => <span key={t} className="pj-chip">{t}</span>)}
+                </div>
+                
+                <div className="pj-actions">
+                  <button className="pj-btn pj-btn-primary">
+                    VIEW CASE STUDY <ArrowUpRight size={16} />
+                  </button>
+                  <a href="#" className="pj-btn pj-btn-ghost"><Globe size={20} /></a>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="proj-progress-rail">
-        <div className="proj-progress-bar" ref={progressRef} />
+        <div className="proj-progress-rail">
+          <div className="proj-progress-bar" ref={progressRef} />
+        </div>
+        <div className="proj-count" ref={countRef}>01 / 04</div>
       </div>
-      <div className="proj-count" ref={countRef}>01 / 04</div>
     </section>
   );
 };

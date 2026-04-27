@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./HorizontalScroll.css";
@@ -11,7 +11,6 @@ const HorizontalScroll = ({ children, onProgressUpdate }) => {
   const progressRef = useRef(null);
   const titleRef = useRef(null);
   const containerRef = useRef(null);
-  const [currentProgress, setCurrentProgress] = useState(0);
 
   useLayoutEffect(() => {
     const sectionEl = sectionRef.current;
@@ -55,7 +54,6 @@ const HorizontalScroll = ({ children, onProgressUpdate }) => {
               if (progressRef.current) {
                 progressRef.current.style.transform = `scaleX(${self.progress})`;
               }
-              setCurrentProgress(self.progress);
               if (Math.abs(self.progress - lastReportedProgress) > 0.01) {
                 lastReportedProgress = self.progress;
                 onProgressUpdate?.(self.progress);

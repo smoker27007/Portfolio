@@ -13,17 +13,13 @@ const ProjectSection = ({
   role,
   image,
   accentColor,
-  year,
   badge,
-  onExplore,
 }) => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const imageRef = useRef(null);
   const numberRef = useRef(null);
   const buttonRef = useRef(null);
-  const isFirstRef = useRef(number === "01");
-  const isLastRef = useRef(number === total);
   const badgeRef = useRef(null);
 
   useEffect(() => {
@@ -164,8 +160,6 @@ const ProjectSection = ({
             <span className="button-arrow">→</span>
             <div className="button-background" style={{ background: accentColor }} />
           </button>
-          <button ref={buttonRef} className="project-cta-button"></button>
-          <button ref={buttonRef} className="project-cta-button"></button>
         </div>
 
         {/* Right image section */}

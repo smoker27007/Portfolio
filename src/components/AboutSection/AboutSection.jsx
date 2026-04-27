@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Layers, Cpu, Diamond, Gauge, Zap } from "lucide-react";
-import { WorkspaceContext } from "../Workspace/Workspace";
+import { WorkspaceContext } from "../Workspace/WorkspaceContext";
 import "./AboutSection.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -25,11 +25,11 @@ const DNACanvas = () => {
     if (!canvas || !scrollerRef.current || !isReady) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
+    const parent = canvas.parentElement;
+    if (!parent) return;
 
     let cw = 0, ch = 0;
     const resize = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
       const rect = parent.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       cw = rect.width;
@@ -46,6 +46,12 @@ const DNACanvas = () => {
       resizeTimerRef.current = setTimeout(resize, 200);
     };
     window.addEventListener("resize", onResize);
+
+    // Keep canvas dimensions synced with section height changes
+    const resizeObserver = new ResizeObserver(() => {
+      onResize();
+    });
+    resizeObserver.observe(parent);
 
     const makeGlow = (r, g, b, isLarge) => {
       const size = isLarge ? 64 : 32;
@@ -73,7 +79,8 @@ const DNACanvas = () => {
     const sprWhiteSmall = makeGlow(120, 107, 99, false); 
 
     const renderables = [];
-    const requiredHeight = ch + (ch * 0.5) + 600; 
+    // Add extra headroom so the first and last helix turns can fully enter the viewport.
+    const requiredHeight = Math.max(ch * 2.4, ch + 1200);
     const stepSize = 10;  
     const totalNodes = Math.ceil(requiredHeight / stepSize); 
     const radius = 150; 
@@ -116,7 +123,9 @@ const DNACanvas = () => {
         const rotX = -0.15 + (prog * 0.3); 
         const rotY = time * 0.2 + (prog * Math.PI * 1.2); 
         const rotZ = 0.05 * Math.sin(time * 0.8);
-        const panY = (prog - 0.5) * (ch * 0.5);
+        // Move across almost the entire helix so both ends are reached reliably.
+        const panRange = Math.max(0, totalHeight - ch * 0.22);
+        const panY = startY + panRange * prog;
         const sinX = Math.sin(rotX), cosX = Math.cos(rotX);
         const sinY = Math.sin(rotY), cosY = Math.cos(rotY);
         const sinZ = Math.sin(rotZ), cosZ = Math.cos(rotZ);
@@ -227,9 +236,10 @@ const DNACanvas = () => {
       cancelAnimationFrame(rafRef.current);
       clearTimeout(resizeTimerRef.current);
       window.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
       if (st) st.kill();
     };
-  }, []);
+  }, [isReady, scrollerRef]);
 
   return (
     <div className="dna-canvas-wrapper">
@@ -332,7 +342,7 @@ const AboutSection = () => {
       gsap.from(".about-label", { y: 20, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: { trigger: s, scroller: scrollerRef.current, start: "top 80%", toggleActions: "play none none reverse" } });
       gsap.from(".about-heading-char", { y: 60, opacity: 0, stagger: 0.015, duration: 0.8, ease: "power4.out", scrollTrigger: { trigger: ".about-heading", scroller: scrollerRef.current, start: "top 78%", toggleActions: "play none none reverse" } });
       gsap.from(".about-sub", { y: 20, opacity: 0, duration: 0.7, ease: "power3.out", scrollTrigger: { trigger: ".about-sub", scroller: scrollerRef.current, start: "top 85%", toggleActions: "play none none reverse" } });
-      s.querySelectorAll(".about-block").forEach(function (b, index) {
+      s.querySelectorAll(".about-block").forEach(function (b) {
         gsap.from(b, { 
             y: 40, 
             opacity: 0, 
@@ -349,7 +359,7 @@ const AboutSection = () => {
       gsap.from(".about-stat", { y: 30, opacity: 0, stagger: 0.08, duration: 0.6, ease: "power3.out", scrollTrigger: { trigger: ".about-stats-row", scroller: scrollerRef.current, start: "top 88%", toggleActions: "play none none reverse" } });
     }, s);
     return () => ctx.revert();
-  }, [isReady]);
+  }, [isReady, scrollerRef]);
 
   const split = (text) =>
     text.split("").map((c, i) => (

@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AnimatedFace from "../../components/AnimatedFace/AnimatedFace";
 import "./Hero.css";
 import avatar1 from "../../assets/heroBG.png";
-import { WorkspaceContext } from "../../components/Workspace/Workspace";
+import { WorkspaceContext } from "../../components/Workspace/WorkspaceContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -221,7 +221,7 @@ const Hero = () => {
     }, section);
 
     return () => ctx.revert();
-  }, [isReady]);
+  }, [isReady, scrollerRef]);
 
   const splitLine = (text, isOutline = false) =>
     text.split("").map((c, i) => (

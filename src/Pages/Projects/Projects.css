@@ -118,6 +118,7 @@
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  min-height: 600px;
 }
 
 .proj-cursor {
@@ -179,10 +180,12 @@
 .proj-track {
   display: flex;
   align-items: center;
-  height: 100vh;
+  height: 100%;
   padding: 0 8vw;
   gap: 60px;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .pj-card {
@@ -206,6 +209,8 @@
     box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.4s ease;
   cursor: none;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .pj-card:hover {
@@ -243,6 +248,8 @@
   height: 110%;
   object-fit: cover;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   transition: filter 0.5s ease;
 }
 

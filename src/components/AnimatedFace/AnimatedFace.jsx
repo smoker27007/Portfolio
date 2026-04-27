@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import avatarImg from "../../assets/avatar.png";
-import { WorkspaceContext } from "../Workspace/Workspace";
+import { WorkspaceContext } from "../Workspace/WorkspaceContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,7 +20,8 @@ const AnimatedFace = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !scrollerRef.current || !isReady) return;
+    const scroller = scrollerRef.current;
+    if (!canvas || !scroller || !isReady) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
@@ -50,7 +51,7 @@ const AnimatedFace = () => {
     resize();
     // Also listen to the scroller resize, not just window resize
     window.addEventListener("resize", resize);
-    scrollerRef.current?.addEventListener("resize", resize);
+    scroller.addEventListener("resize", resize);
 
     const GAP = 5;
     const DOT_RADIUS = 3.5;
@@ -309,11 +310,11 @@ const AnimatedFace = () => {
       if (st) st.kill();
       if (observer) observer.disconnect();
       window.removeEventListener("resize", resize);
-      scrollerRef.current?.removeEventListener("resize", resize);
+      scroller.removeEventListener("resize", resize);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, []);
+  }, [isReady, scrollerRef]);
 
   return (
     <canvas
